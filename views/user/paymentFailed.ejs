@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    /* General page reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Container for centering content */
+.container {
+    text-align: center;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    max-width: 400px;
+    width: 100%;
+}
+
+/* Header styling */
+h1 {
+    color: #491b18;  /* Red color */
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+/* Paragraph styling */
+p {
+    color: #491b18;  /* Red color for the error message */
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+/* Button styling */
+.btn {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 5px;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #B08EAD;  /* Red color */
+}
+
+.btn-primary:hover {
+    background-color: #B08EAD;  /* Darker red on hover */
+}
+
+.btn-primary:active {
+    background-color: #B08EAD;  /* Even darker red on active click */
+}
+
+/* For smaller screens */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 28px;
+    }
+
+    p {
+        font-size: 16px;
+    }
+
+    .btn {
+        font-size: 14px;
+    }
+}
+
+</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Failed</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Payment Failed</h1>
+        <p><%= message %></p>
+        <a href="/order" class="btn btn-primary">Back to Orders</a>
+        <a href="/showProducts" class="btn btn-primary">Back to Products</a>
+    </div>
+</body>
+</html>

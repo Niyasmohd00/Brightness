@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="zxx">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Brightness</title>
+    <link rel="icon" href="img/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="css/all.css">
+    <!-- flaticon CSS -->
+    <link rel="stylesheet" href="css/flaticon.css">
+    <link rel="stylesheet" href="css/themify-icons.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <!-- swiper CSS -->
+    <link rel="stylesheet" href="css/slick.css">
+    <!-- style CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<style>
+    .zoom-container { position: relative; overflow: hidden; }
+    .zoom-wrapper { position: relative; width: 100%; max-width: 600px; }
+    .zoom-image { width: 100%; transition: transform 0.3s ease; }
+    .thumbnail { width: 80px; height: 80px; object-fit: cover; cursor: pointer; margin-right: 10px; margin-bottom: 10px; border: 2px solid transparent; transition: border-color 0.3s ease; }
+    .thumbnail.active { border-color: #007bff; }
+    .rating { color: orange; }
+    .status-available { color: green; }
+    .status-unavailable { color: red; }
+    .related-product img { width: 100%; height: 200px; object-fit: cover; margin-bottom: 10px; }
+    .zoom-wrapper {
+text-align: center;
+margin-bottom: 10px;
+}
+
+.zoom-image {
+width: 100%; /* Adjust the width based on your design */
+height: auto;
+max-width: 500px; /* Optional: Maximum size for the zoomed image */
+}
+
+.thumbnail {
+width: 100px;
+height: 100px;
+margin-left: 25px;
+cursor: pointer;
+opacity: 0.7;
+transition: opacity 0.3s ease, border 0.3s ease;
+}
+
+.thumbnail.active {
+border: 2px solid #000; /* Highlight the active thumbnail */
+opacity: 1;
+}
+
+.thumbnail:hover {
+opacity: 1; /* Increase opacity when hovered */
+}
+
+</style>
+<body>
+    <!--::header part start::-->
+    <%- include("../partials/user/header") %>
+
+    <div class="container mt-4">
+        <!-- breadcrumb part start-->
+    <div class="container">
+        <h3>
+            <a href="/" style="text-decoration: none;">Home</a> / 
+            <a href="/showProducts" style="text-decoration: none;">Product</a> / 
+            <a href=""><%= product.productName %></a>
+        </h3>
+    </div>
+    
+    <!-- breadcrumb part end-->
+    
+        <div class="row">
+            <div class="col-md-6 zoom-container">
+                <!-- Main Image Container -->
+                <div class="zoom-wrapper">
+                    <div class="main-image">
+                        <!-- Updated the src path to match File 2's structure -->
+                        <img id="mainImage" class="zoom-image" src="/uploads/re-image/<%= product.productImages && product.productImages.length > 0 ? product.productImages[0] : 'no_images.jpg' %>"
+                            alt="<%= product.productName %>"
+                            onerror="this.onerror=null;this.src='/styles/images/no_images.jpg';">
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap mt-3">
+                    <div class="thumbnail-images d-flex flex-wrap">
+                        <% if (product.productImages && product.productImages.length > 0) { %>
+                            <% product.productImages.forEach((image, index) => { %>
+                                <!-- Updated the src path to match File 2's structure -->
+                                <img src="/uploads/re-image/<%= image %>"
+                                    alt="Product Image <%= index + 1 %>"
+                                    class="thumbnail"
+                                    onclick="changeMainImage(this)"
+                                    id="thumbnail-<%= index %>"
+                                    onerror="this.onerror=null;this.src='/styles/images/no_images.jpg';">
+                            <% }) %>
+                        <% } else { %>
+                            <img src="/styles/images/no_images.jpg" alt="No Image Available" class="thumbnail">
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="col-md-6">
+                <h1><%= product.productName %></h1>
+                <p class="rating">★★★★☆ (0 User feedback)</p>
+                <p><%= product.description %></p>
+                <p>Status: <span class="<%= product.stock > 0 ? 'status-available' : 'status-unavailable' %>">
+                    <%= product.stock > 0 ? 'Available' : 'Sold Out' %></span>
+                </p>
+                <p>Category: <%= product.category && product.category.name ? product.category.name : 'Not available' %></p>
+                <p>MRP: Rs <%= product.mrp %></p>
+                <p>Offer Price: Rs <%= product.price %></p>
+                <p>Discount Available: <%= product.category && product.category.categoryOffer ? product.category.categoryOffer : 'No discount' %></p>
+                <p>Size: <%= product.size %></p>
+                <p>Colors: <%= product.availableColors %></p>
+                <% if (product.stock < 5 && product.stock > 0) { %>
+                    <p style="color: red;">Hurry Up.Only <%= product.stock %> Stock available!</p>
+                <% } %>
+                <% if (success_msg) { %>
+                    <h5 class="text-left text-success mb-3"><%= success_msg %></h5>
+                <% } %>
+                <% if (error_msg) { %>
+                    <h5 class="text-left text-danger mb-3"><%= error_msg %></h5>
+                <% } %>
+            
+                <!-- Add to Cart Button -->
+                <a href="/addToCart?productId=<%= product._id %>&quantity=1" 
+                    class="btn btn-primary" >
+                    Add to Cart
+                </a>
+                
+                <!-- Add to Wishlist Button -->
+                <a href="/addToWishlist?productId=<%= product._id %>"
+                    class="btn btn-primary">
+                    Add to wishlist
+                </a>
+                <br>
+                <br>
+                <a href="/buyNow?productId=<%= product._id %>&quantity=1" 
+                    class="btn btn-primary" 
+                    <%= product.stock > 0 ? '' : 'disabled' %>>
+                    Buy Now
+                </a>
+                <!-- Product Details -->
+                <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+                
+                    <div class="mt-4">
+                        <h5>Highlights/Specs:</h5>
+                        <p><%= product.features %></p>
+                        <p>Item Weight: 1500 g</p>
+                        <p>Item Dimensions: LxWxH 61 x 61 x 5 Centimeters</p>
+                        <p>1 Year Warranty for Sensor</p>
+                    </div>
+                </div>
+            </div>            
+            
+        </div>
+    
+        <div class="row mt-5">
+            <div class="col-12">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="review-tab" data-bs-toggle="tab" data-bs-target="#review" type="button" role="tab" aria-controls="review" aria-selected="false">Reviews</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3>Related Products</h3>
+                <% if (relatedProducts.length === 0) { %>
+                    <div class="no-products-message">
+                        <p>No related products found.</p>
+                    </div>
+                <% } else { %>
+                    <div class="row">
+                        <% relatedProducts.forEach((product) => { %>
+                            <div class="col-12 col-md-4 col-lg-3 mb-5">
+                                <a href="/eachProduct?id=<%= product._id %>" class="product-link">
+                                    <% if (product.productImages && product.productImages.length > 0) { %>
+                                        <img src="/uploads/re-image/<%= product.productImages[0] %>" 
+                                            class="img-fluid product-thumbnail" 
+                                            alt="<%= product.productName %>" 
+                                            onerror="this.onerror=null;this.src='/styles/images/no_images.jpg';">
+                                    <% } else { %>
+                                        <img src="/styles/images/no_images.jpg" 
+                                            class="img-fluid product-thumbnail" 
+                                            alt="No image available">
+                                    <% } %>
+                                    <h3><%= product.productName %></h3>
+                                    <p>
+                                        <del>₹<%= product.mrp %></del> ₹<%= product.price %>
+                                    </p>
+                                </a>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+        
+    </div>
+    
+   <!-- subscribe part here -->
+   <section class="subscribe_part section_padding">
+      <div class="container">
+          <div class="row justify-content-center">
+              <div class="col-lg-8">
+                  <div class="subscribe_part_content">
+                      <h2>Get promotions & updates!</h2>
+                      <p>Seamlessly empower fully researched growth strategies and interoperable internal or “organic” sources credibly innovate granular internal .</p>
+                      <div class="subscribe_form">
+                          <input type="email" placeholder="Enter your mail">
+                          <a href="#" class="btn_1">Subscribe</a>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section>
+  <!-- subscribe part end -->
+
+  <!--::footer_part start::-->
+  <%- include("../partials/user/footer") %>
+  <!--::footer_part end::-->
+
+    <script>
+        function changeImage(imageSrc, index) {
+            // Update the main image source
+            const mainImage = document.getElementById('mainImage');
+            mainImage.src = '/' + imageSrc;
+
+            // Remove the active class from all thumbnails
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            thumbnails.forEach(thumbnail => {
+                thumbnail.classList.remove('active');
+            });
+
+    // Add the active class to the clicked thumbnail
+            const clickedThumbnail = document.getElementById('thumbnail-' + index);
+            clickedThumbnail.classList.add('active');
+        }
+
+
+        const zoomImage = document.getElementById('mainImage');
+        const zoomWrapper = document.querySelector('.zoom-wrapper');
+
+        zoomWrapper.addEventListener('mousemove', function(e) {
+            const rect = zoomWrapper.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const xPercent = x / zoomWrapper.offsetWidth * 100;
+            const yPercent = y / zoomWrapper.offsetHeight * 100;
+            zoomImage.style.transformOrigin = xPercent + '% ' + yPercent + '%';
+            zoomImage.style.transform = 'scale(2)';
+        });
+
+        zoomWrapper.addEventListener('mouseleave', function() {
+            zoomImage.style.transform = 'scale(1)';
+        });
+
+
+
+        function changeMainImage(thumbnail) {
+            // Get the main image element
+            const mainImage = document.getElementById('mainImage');
+
+            // Change the src attribute of the main image to the clicked thumbnail's src
+            mainImage.src = thumbnail.src;
+        }
+function changeMainImage(thumbnail) {
+    // Get the main image element
+    const mainImage = document.getElementById('mainImage');
+
+    // Change the src attribute of the main image to the clicked thumbnail's src
+    mainImage.src = thumbnail.src;
+
+    // Remove the 'active' class from all thumbnails
+    const thumbnails = document.querySelectorAll('.thumbnail');
+    thumbnails.forEach(thumb => thumb.classList.remove('active-thumbnail'));
+
+    // Add the 'active' class to the clicked thumbnail
+    thumbnail.classList.add('active-thumbnail');
+}
+
+    </script>
+    <!-- jquery plugins here-->
+    <script src="js/jquery-1.12.1.min.js"></script>
+    <!-- popper js -->
+    <script src="js/popper.min.js"></script>
+    <!-- bootstrap js -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- easing js -->
+    <script src="js/jquery.magnific-popup.js"></script>
+    <!-- swiper js -->
+    <script src="js/swiper.min.js"></script>
+    <!-- swiper js -->
+    <script src="js/mixitup.min.js"></script>
+    <!-- particles js -->
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.nice-select.min.js"></script>
+    <!-- slick js -->
+    <script src="js/slick.min.js"></script>
+    <script src="js/jquery.counterup.min.js"></script>
+    <script src="js/waypoints.min.js"></script>
+    <script src="js/contact.js"></script>
+    <script src="js/jquery.ajaxchimp.min.js"></script>
+    <script src="js/jquery.form.js"></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script src="js/mail-script.js"></script>
+    <!-- custom js -->
+    <script src="js/custom.js"></script>
+</body>
+
+</html>

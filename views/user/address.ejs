@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Brightness</title>
+    <link rel="icon" href="img/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="css/all.css">
+    <!-- flaticon CSS -->
+    <link rel="stylesheet" href="css/flaticon.css">
+    <link rel="stylesheet" href="css/themify-icons.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <!-- swiper CSS -->
+    <link rel="stylesheet" href="css/slick.css">
+    <!-- style CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f7f6;
+        }
+        .container {
+            margin-top: 40px;
+        }
+        .address-header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #3b5d50;
+        }
+        .card {
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .btn {
+            border-radius: 8px;
+            margin-right: 10px;
+        }
+        .address-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .address-item {
+            flex: 1 1 calc(33.33% - 20px);
+            margin-bottom: 20px;
+        }
+        .add-address-btn {
+            text-align: center;
+            margin-top: 20px;
+        }
+        @media (max-width: 768px) {
+            .address-item {
+                flex: 1 1 100%;
+            }
+        }
+        .no-address-message {
+        font-weight: bold;
+        text-align: center;
+        font-size: 1.5em;
+        margin-top: 20px;
+        color: #555;
+    }
+    </style>
+</head>
+
+<body>
+    <%- include('../partials/user/header') %>
+
+    <div class="container">
+        <h3 class="address-header">Your Addresses</h3>
+        
+        <% if (addresses.length > 0) { %>  <!-- Correct EJS syntax for logic -->
+            <!-- Address List -->
+            <div class="address-list">
+                <% addresses.forEach(address => { %>
+                    <div class="card address-item">
+                        <div class="card-body">
+                            <h5 class="card-title"><strong><%= address.fname %> <%= address.lname %></strong></h5>
+                            <p class="card-text">
+                                <%= address.housename %>, <%= address.city %>, 
+                                <br><%= address.landmark %>
+                                <br><%= address.state %>, <%= address.country %> - <%= address.pincode %><br>
+                                <strong>Phone:</strong> <%= address.phone %>
+                            </p>
+                            <a href="/edit-address/<%= address._id %>" class="btn btn-secondary">Edit</a>
+                            <button class="btn btn-danger" onclick="deleteAddress('<%= address._id %>')">Delete</button>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } else { %>  <!-- Correct else block -->
+            <p class="no-address-message">No addresses found.</p>
+            <% } %>  <!-- Close the if-else logic -->
+    </div>
+    
+        <div class="add-address-btn">
+            <a href="/add-address" class="btn btn-primary">Add New Address</a>
+        </div>
+    </div>
+
+    <%- include('../partials/user/footer') %>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+    function deleteAddress(id) {
+    if (confirm("Are you sure you want to delete this address?")) {
+        fetch(`/delete-address/${id}`, {
+            method: 'DELETE', // Using DELETE method
+        })
+        .then(response => {
+            // Ensure the response is JSON
+            if (!response.ok) {
+                throw new Error("Failed to delete address. Please try again.");
+            }
+            return response.json(); // Parse JSON
+        })
+        .then(data => {
+            if (data.success) {
+                alert(data.message); // Show success message
+                location.reload(); // Reload the page to update the address list
+            } else {
+                alert(data.message || "Failed to delete the address. Please try again.");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(error.message || "An error occurred.");
+        });
+    }
+}
+        
+    </script>
+    <!-- jquery plugins here-->
+    <script src="js/jquery-1.12.1.min.js"></script>
+    <!-- popper js -->
+    <script src="js/popper.min.js"></script>
+    <!-- bootstrap js -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- easing js -->
+    <script src="js/jquery.magnific-popup.js"></script>
+    <!-- swiper js -->
+    <script src="js/swiper.min.js"></script>
+    <!-- swiper js -->
+    <script src="js/mixitup.min.js"></script>
+    <!-- particles js -->
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.nice-select.min.js"></script>
+    <!-- slick js -->
+    <script src="js/slick.min.js"></script>
+    <script src="js/jquery.counterup.min.js"></script>
+    <script src="js/waypoints.min.js"></script>
+    <script src="js/contact.js"></script>
+    <script src="js/jquery.ajaxchimp.min.js"></script>
+    <script src="js/jquery.form.js"></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script src="js/mail-script.js"></script>
+    <!-- custom js -->
+    <script src="js/custom.js"></script>
+
+</body>
+
+</html>
+    

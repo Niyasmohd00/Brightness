@@ -1,0 +1,211 @@
+<%- include("../partials/admin/header") %>
+
+    <!-- Dashboard Container -->
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <!-- Dashboard Heading -->
+            <h1 class="mb-3">Dashboard</h1>
+
+            <!-- Download Report Section (Right Side) -->
+            <div class="text-right mr-2">
+                <h5>Download Report</h5>
+                <div class="d-flex justify-content-center">
+                    <a href="/admin/download-excel?startDate=<%= startDate %>&endDate=<%= endDate %>&filterBy=<%= filterBy %>" class="btn btn-success btn-sm mr-2">Excel</a>
+                    <a href="/admin/download-pdf?startDate=<%= startDate %>&endDate=<%= endDate %>&filterBy=<%= filterBy %>" class="btn btn-danger btn-sm">PDF</a>
+                </div>
+            </div>    
+        </div>
+        <div class="row">
+            <!-- Main Content (Full Width) -->
+            <div class="col-12">
+                <!-- Sales Report Section -->
+                <div class="container mt-4">
+                    <h3 class="text-center mb-4">Sales Report</h3>
+
+                    <!-- Sort and Filter Form -->
+                    <div class="d-flex justify-content-between w-100">
+                        <!-- Sort Section (Left) -->
+                        <form method="GET" action="/admin/salesReport" 
+                            class="d-flex justify-content-between align-items-center w-100" onsubmit="return formValidation()">
+                            <div class="d-flex justify-content-center flex-grow-1 mb-4">
+                                <!-- Start Date -->
+                                <div class="mr-3">
+                                    <label for="startDate" class="d-block mb-1">Start Date:</label>
+                                    <input type="date" name="startDate" id="startDate" value="<%= startDate || '' %>"
+                                        class="form-control form-control-sm">
+                                </div>
+
+                                <!-- End Date -->
+                                <div class="mr-3">
+                                    <label for="endDate" class="d-block mb-1">End Date:</label>
+                                    <input type="date" name="endDate" id="endDate" value="<%= endDate || '' %>"
+                                        class="form-control form-control-sm">
+                                </div>
+
+                                <!-- Filter By -->
+                                <div class="mr-3">
+                                    <label for="filterBy" class="d-block mb-1">Filter By:</label>
+                                    <select name="filterBy" id="filterBy" class="form-control form-control-sm">
+                                        <option value="all" <%=filterBy==='all' ? 'selected' : '' %>>All</option>
+                                        <option value="1day" <%=filterBy==='1day' ? 'selected' : '' %>>1 Day</option>
+                                        <option value="week" <%=filterBy==='week' ? 'selected' : '' %>>Week</option>
+                                        <option value="month" <%=filterBy==='month' ? 'selected' : '' %>>Month</option>
+                                        <option value="year" <%=filterBy==='year' ? 'selected' : '' %>>Year</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-dark btn-sm ml-2 h-100"
+                                    style="margin-top: 28px;">Show</button>
+                            </div>
+                        </form>
+                    </div>
+
+
+                    <!-- Table Section -->
+                    <div class="table-responsive">
+                        <div id="selectDateError" class="error-message text-danger text-center"></div>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Products</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Quantity</th>
+                                    <th scope="col">Total</th>
+                                    <th scope="col">Discount</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Payment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (orders.length> 0) { %>
+                                    <% let orderNumber=1; %>
+                                        <% orders.forEach(order=> { %>
+                                            <!-- Display Order ID as a subtitle row for the group -->
+                                            <tr class="order-subtitle">
+                                                <td colspan="10" class="text-left">
+                                                    <%= orderNumber++ %>.Order No: <%= order.orderId %> | Customer Name: <%= order.userId.name %> | Order Date: <%=
+                                                                new Date(order.orderDate).toLocaleDateString() %>
+                                                </td>
+                                            </tr>
+
+                                            <% order.products.forEach(product=> { %>
+                                                <tr>
+                                                    <td>
+                                                        <%= new Date(order.orderDate).toLocaleDateString() %>
+                                                    </td>
+                                                    <td style="white-space: nowrap;">
+                                                        <%= product.productId.productName %>
+                                                    </td>
+                                                    <td>₹<%= product.productId.price.toFixed(2) %>
+                                                    </td>
+                                                    <td>
+                                                        <%= product.quantity %>
+                                                    </td>
+                                                    <td>₹<%= product.productId.price*product.quantity.toFixed(2) %>
+                                                    </td>
+                                                    <td>₹<%= product.offerAmount.toFixed(2) %>
+                                                    </td>
+                                                    <td>
+                                                        <%= product.status %>
+                                                    </td>
+                                                    <td>
+                                                        <%= order.paymentStatus %>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                                <tr class="order-subtitle">
+                                                    <td colspan="10" class="text-center">
+                                                        Order Total: <%= order.totalAmount %>
+                                                    </td>
+                                                </tr>
+                                                <tr class="order-subtitle">
+                                                    <td colspan="10" class="text-center">
+                                                        Coupon Applied:<%=order.couponDiscount%>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="10" class="text-center">No orders found.
+                                                </td>
+                                            </tr>
+                                        <% } %>
+                                            <tr class="order-subtitle">
+                                                <td colspan="10" class="text-center">
+                                                    <h5>Total Orders: <%=totalOrders %>
+                                                    </h5>
+                                                </td>
+                                            </tr>
+                                            <tr class="order-subtitle">
+                                                <td colspan="10" class="text-center">
+                                                    <h5>Total Discount: ₹<%= discountTotal.toFixed(2)
+                                                            %>
+                                                    </h5>
+                                                </td>
+                                            </tr>
+                                            <tr class="order-subtitle">
+                                                <td colspan="10" class="text-center">
+                                                    <h5>Total Amount: ₹<%= reportTotal.toFixed(2) %>
+                                                    </h5>
+                                                </td>
+                                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Pagination Controls -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <% for (let i=1; i <=totalPages; i++) { %>
+                    <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                        <a class="page-link" href="?page=<%= i %>">
+                            <%= i %>
+                        </a>
+                    </li>
+                    <% } %>
+            </ul>
+        </nav>
+    </div>
+
+    <%- include('../partials/admin/footer') %>
+    <script>
+    const startDate = document.getElementById("startDate");
+const endDate = document.getElementById("endDate");
+const selectDateError = document.getElementById("selectDateError");
+
+function selectDateValidation() {
+    const start = startDate.value.trim();
+    const end = endDate.value.trim();
+    const today = new Date().toISOString().split("T")[0];
+    let hasErrors = false;
+
+    if (start > today) {
+        selectDateError.style.display = "block";
+        selectDateError.innerHTML = "Starting Date Can't be a future date.";
+        hasErrors = true;
+    } else if (start > end) {
+        selectDateError.style.display = "block";
+        selectDateError.innerHTML = "Please select a proper date range.";
+        hasErrors = true;
+    } else {
+        selectDateError.style.display = "none";
+        selectDateError.innerHTML = "";
+    }
+
+    return hasErrors;
+}
+
+// Form Validation
+function formValidation() {
+    const hasErrors = selectDateValidation();
+    return !hasErrors; // Submit the form only if no errors
+}
+
+// Attach validation functions to form input events
+startDate.addEventListener("blur", selectDateValidation);
+endDate.addEventListener("blur", selectDateValidation);
+
+    </script>

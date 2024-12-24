@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="/css/all.css">
+    <style>
+        /* Wrapper and layout styling */
+        #wrapper {
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+        }
+
+        #sidebar-wrapper {
+            width: 250px;
+            transition: width 0.4s;
+        }
+
+        /* Page content */
+        .page-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* Hamburger icon */
+        .hamburger {
+            display: inline-block;
+            cursor: pointer;
+            margin-right: 20px;
+        }
+
+        .line {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: #000;
+            margin: 4px 0;
+            transition: 0.4s;
+        }
+
+        /* Toggle sidebar visibility */
+        #wrapper.toggled #sidebar-wrapper {
+            width: 0;
+            overflow: hidden;
+        }
+
+        /* Sidebar heading */
+        .sidebar-heading {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #FFD700;
+            text-align: center;
+            padding: 15px 0;
+            text-transform: uppercase;
+        }
+
+        /* Centered heading */
+        .navbar-brand {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #FFD700;
+            text-align: center;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Sidebar and Navbar combined styling */
+        .navbar {
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .list-group-item {
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div class="bg-dark border-right" id="sidebar-wrapper">
+            <div class="list-group list-group-flush">
+                <a href="/admin/dashboard" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="fas fa-tachometer-alt nav-icon"></i> Dashboard</a>
+                <a href="/admin/products" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="fas fa-box nav-icon"></i> Products</a>
+                <a href="/admin/category" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="fas fa-tags nav-icon"></i> Category</a>
+                <a href="/admin/orders" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="fas fa-shopping-cart nav-icon"></i> Orders</a>
+                <a href="/admin/coupons" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="fas fa-gift nav-icon"></i> Coupons</a>
+                <a href="/admin/offers" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="fas fa-percentage nav-icon"></i> Offers</a>
+                <a href="/admin/users" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="fas fa-users nav-icon"></i> Customers</a>
+                <a href="/admin/transactions" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="fas fa-money-bill-wave nav-icon"></i> Transactions</a>
+                <a href="/admin/logout" class="list-group-item list-group-item-action bg-dark text-white">
+                    <i class="fas fa-sign-out-alt nav-icon"></i> Logout</a>
+
+            </div>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content Wrapper Start -->
+        <div class="page-content">
+            <!-- Navbar -->
+            <header class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="hamburger" id="menu-toggle">
+                    <span class="line"></span>
+                    <span class="line"></span>
+                    <span class="line"></span>
+                </div>
+                <div class="navbar-brand">BRIGHTNESS</div>
+                <div class="ml-auto">
+                    <span>Welcome, Admin</span>
+                </div>
+            </header>
+
+            <!-- Content for each page will go here -->
+            <main class="container mt-4">

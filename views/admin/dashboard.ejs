@@ -1,0 +1,159 @@
+<%- include("../partials/admin/header") %>
+
+<div class="container mt-4">
+    <h1 class="mb-3 text-center">Dashboard</h1>
+
+    <!-- Sales Report Button -->
+    <div class="d-flex justify-content-end mb-3">
+        <a href="salesReport" class="btn btn-primary">Get Sales Report</a>
+    </div>
+
+    <!-- Month, Year, and Chart Selector -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form id="chartForm">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label for="month">Select Month:</label>
+                        <select name="month" id="month" class="form-control">
+                            <option value="1" <%= month === 1 ? 'selected' : '' %>>January</option>
+                            <option value="2" <%= month === 2 ? 'selected' : '' %>>February</option>
+                            <option value="3" <%= month === 3 ? 'selected' : '' %>>March</option>
+                            <option value="4" <%= month === 4 ? 'selected' : '' %>>April</option>
+                            <option value="5" <%= month === 5 ? 'selected' : '' %>>May</option>
+                            <option value="6" <%= month === 6 ? 'selected' : '' %>>June</option>
+                            <option value="7" <%= month === 7 ? 'selected' : '' %>>July</option>
+                            <option value="8" <%= month === 8 ? 'selected' : '' %>>August</option>
+                            <option value="9" <%= month === 9 ? 'selected' : '' %>>September</option>
+                            <option value="10" <%= month === 10 ? 'selected' : '' %>>October</option>
+                            <option value="11" <%= month === 11 ? 'selected' : '' %>>November</option>
+                            <option value="12" <%= month === 12 ? 'selected' : '' %>>December</option>
+                        </select>
+                    </div>
+    
+                    <div class="col-md-3">
+                        <label for="year">Select Year:</label>
+                        <select name="year" id="year" class="form-control">
+                            <option value="2024" <%= year === 2024 ? 'selected' : '' %>>2024</option>
+                            <option value="2023" <%= year === 2023 ? 'selected' : '' %>>2023</option>
+                            <option value="2022" <%= year === 2022 ? 'selected' : '' %>>2022</option>
+                        </select>
+                    </div>
+    
+                    <div class="col-md-3">
+                        <label for="chartType">Chart By:</label>
+                        <select name="chartType" id="chartType" class="form-control">
+                            <option value="monthly" <%= chartType === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                            <option value="yearly" <%= chartType === 'yearly' ? 'selected' : '' %>>Yearly</option>
+                        </select>
+                    </div>
+    
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Generate Chart</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-4" style="margin-bottom: 50px;">
+        <div class="card-header text-center">
+            <h4>Product Status Chart</h4>
+        </div>
+        <div class="card-body">
+            <canvas id="productStatusChart" style="height: 500px;"></canvas>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header text-center">
+            <h4>Category Sales Chart</h4>
+        </div>
+        <div class="card-body">
+            <canvas id="categorySalesChart" style="height: 500px;"></canvas>
+        </div>
+    </div>
+
+
+    <!-- Top Products and Categories Section -->
+    <div class="row">
+        <!-- Top Products -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4>Top 10 Products in Sales</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <% topProducts.forEach(product => { %>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><%= product.productName %></span>
+                                <span><%= product.totalSoldItems %> Sold</span>
+                            </li>
+                        <% }) %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Categories -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4>Top 10 Categories in Sales</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <% topCategories.forEach(category => { %>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span><%= category.name %></span>
+                                <span><%= category.totalSoldItems %> Sold</span>
+                            </li>
+                        <% }) %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include("../partials/admin/footer") %>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.getElementById('chartForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const month = document.getElementById('month').value;
+        const year = document.getElementById('year').value;
+        const chartType = document.getElementById('chartType').value;
+
+        const url = `/admin/dashboard?month=${month}&year=${year}&chartType=${chartType}`;
+        window.location.href = url;
+    });
+
+    // Product Status Chart
+    const productStatusCtx = document.getElementById('productStatusChart').getContext('2d');
+    const productStatusData = [<%= productStatus.delivered %>, <%= productStatus.returned %>, <%= productStatus.shipped %>, <%= productStatus.pending %>, <%= productStatus.processing %>];
+
+    new Chart(productStatusCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Delivered', 'Returned', 'Shipped', 'Pending', 'Processing'],
+            datasets: [{
+                label: 'Product Status',
+                data: productStatusData,
+                backgroundColor: ['green', 'red', 'blue', 'yellow', 'orange'],
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true } },
+            plugins: {
+                legend: { position: 'top' },
+                title: { display: true, text: 'Product Status (Monthly/Yearly)' }
+            }
+        }
+    });
+
+</script>

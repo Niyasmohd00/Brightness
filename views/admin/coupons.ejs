@@ -1,0 +1,157 @@
+<%- include('../partials/admin/header.ejs') %>
+
+<div class="container mt-4">
+    <h1 class="mb-3">Coupons</h1>
+
+    <!-- Add New Coupon Button -->
+    <div class="row mb-4">
+        <div class="col-md-4 ml-auto">
+            <a href="addCoupon" class="btn btn-primary">Add New Coupon</a>
+        </div>
+    </div>
+
+    <!-- Coupons Table -->
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Coupon Code</th>
+                <th>Discount</th>
+                <th>Expiry Date</th>
+                <th>Status</th>
+                <th>Min Total</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="couponTableBody">
+            <% coupons.forEach(coupon => { %>
+                <tr data-id="<%= coupon._id %>">
+                    <td><%= coupon.couponCode %></td>
+                    <td><%= coupon.discountValue %> <%= coupon.discountType === 'percentage' ? '%' : 'Rs' %></td>
+                    <td><%= new Date(coupon.expiryDate).toLocaleDateString() %></td>
+                    <td><%= coupon.isActive ? 'Active' : 'Inactive' %></td>
+                    <td><%= coupon.minimumPrice %></td> <!-- Minimum Total Column -->
+                    <td><%= new Date(coupon.createdAt).toLocaleDateString() %></td>
+                    <td>
+                        <!-- Edit Coupon Link -->
+                        <a href="/admin/editCoupon/<%= coupon._id %>" class="text-dark mr-2">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <!-- Delete Coupon Button -->
+                        <a href="#" class="text-dark mr-2" onclick="confirmDelete('<%= coupon._id %>')">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                        <!-- Toggle Active/Block Button -->
+                        <a href="#" class="text-dark" onclick="toggleActiveStatus('<%= coupon._id %>', '<%= coupon.isActive %>')">
+                            <i class="fas <%= coupon.isActive ? 'fa-toggle-on text-success' : 'fa-toggle-off text-danger' %>"></i>
+                    </td>
+                    
+                    
+                </tr>
+            <% }) %>
+        </tbody>
+        
+        
+    </table>
+
+    <!-- Pagination Controls -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                </li>
+            <% } %>
+        </ul>
+    </nav>
+</div>
+
+<%- include('../partials/admin/footer.ejs') %>
+
+<script>
+    function toggleActiveStatus(couponId, currentStatus) {
+    const isActive = currentStatus === "true"; // Convert the string value to boolean
+    const confirmMessage = isActive
+        ? "Are you sure you want to block this coupon?"
+        : "Are you sure you want to activate this coupon?";
+
+    if (confirm(confirmMessage)) {
+        // Make an API call to update the status
+        fetch(`/admin/toggleCouponStatus/${couponId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ isActive: !isActive })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update the button/icon dynamically
+                const row = document.querySelector(`tr[data-id="${couponId}"]`);
+                const statusCell = row.querySelector("td:nth-child(4)"); // Status column
+                const actionCell = row.querySelector("td:nth-child(7)"); // Action column
+
+                // Update status text
+                statusCell.textContent = !isActive ? "Active" : "Inactive";
+
+                // Update action icon
+                actionCell.innerHTML = `
+                    <a href="/admin/editCoupon/${couponId}" class="text-dark mr-2">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="#" class="text-dark mr-2" onclick="confirmDelete('${couponId}')">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                    <a href="#" class="text-dark" onclick="toggleActiveStatus('${couponId}', '${!isActive}')">
+                        <i class="fas ${!isActive ? 'fa-toggle-on text-success' : 'fa-toggle-off text-danger'}"></i>
+                    </a>
+                `;
+
+                alert("Coupon status updated successfully!");
+            } else {
+                alert("Failed to update coupon status. Please try again.");
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("An error occurred while updating the coupon status.");
+        });
+    }
+}
+
+function confirmDelete(couponId) {
+    if (confirm("Are you sure you want to delete this coupon?")) {
+        // Make an API call to delete the coupon
+        fetch(`/admin/deleteCoupon/${couponId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status:`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            const row = document.querySelector(`tr[data-id="${couponId}"]`);
+            if (row) row.remove();
+            alert("Coupon deleted successfully!");
+        } else {
+            alert("Failed to delete coupon. Please try again.");
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("An error occurred: " + error);
+    });
+
+    }
+}
+
+
+
+</script>

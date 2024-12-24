@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Brightness</title>
+    <link rel="icon" href="img/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="css/all.css">
+    <!-- flaticon CSS -->
+    <link rel="stylesheet" href="css/flaticon.css">
+    <link rel="stylesheet" href="css/themify-icons.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <!-- swiper CSS -->
+    <link rel="stylesheet" href="css/slick.css">
+    <!-- style CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .form-container {
+            background-color: #fff; /* White background for the form */
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+            margin-bottom: 5px; /* Reduce bottom margin for space between input and error message */
+        }
+
+        .form-group input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        .form-group .error-message {
+            color: #dc3545;
+            font-size: 12px;
+            position: absolute;
+            bottom: -18px;
+            left: 0;
+            width: 100%;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .alert {
+            color: #721c24;
+       
+            
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .alert.success {
+            color: #155724;
+          
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <h2>Address Form</h2>
+        <% if (error_msg) { %>
+            <div class="alert">
+                <%= error_msg %>
+            </div>
+        <% } %>
+        <% if (success_msg) { %>
+            <div class="alert success">
+                <%= success_msg %>
+            </div>
+        <% } %>
+        
+        <form method="post" action="/edit-address/<%= address._id %>" id="addressForm">
+            <div class="form-group">
+                <label for="fname">First Name:</label>
+                <input type="text" id="fname" name="fname" value="<%= address.fname %>" >
+                <div class="error-message" id="fnameError"></div>
+            </div>
+            <div class="form-group">
+                <label for="lname">Last Name:</label>
+                <input type="text" id="lname" name="lname" value="<%= address.lname %>" >
+                <div class="error-message" id="lnameError"></div>
+            </div>
+            <div class="form-group">
+                <label for="housename">House Name:</label>
+                <input type="text" id="housename" name="housename" value="<%= address.housename %>" >
+                <div class="error-message" id="housenameError"></div>
+            </div>
+            <div class="form-group">
+                <label for="landmark">Landmark:</label>
+                <input type="text" id="landmark" name="landmark" value="<%= address.landmark %>" >
+                <div class="error-message" id="landmarkError"></div>
+            </div>
+            <div class="form-group">
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" value="<%= address.city %>" >
+                <div class="error-message" id="cityError"></div>
+            </div>
+            <div class="form-group">
+                <label for="state">State:</label>
+                <input type="text" id="state" name="state" value="<%= address.state %>" >
+                <div class="error-message" id="stateError"></div>
+            </div>
+            <div class="form-group">
+                <label for="country">Country:</label>
+                <input type="text" id="country" name="country" value="<%= address.country %>" >
+                <div class="error-message" id="countryError"></div>
+            </div>
+            <div class="form-group">
+                <label for="pincode">Pincode:</label>
+                <input type="number" id="pincode" name="pincode" value="<%= address.pincode %>" required pattern="\d{6}">
+                <div class="error-message" id="pincodeError"></div>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone:</label>
+                <input type="tel" id="phone" name="phone" value="<%= address.phone %>" required pattern="^\d{10}$">
+                <div class="error-message" id="phoneError"></div>
+            </div>
+        
+            <button class="btn" type="submit" style="background-color: #0056b3; color: white;width: fit-content;" >Update Address</button>
+        </form>
+    </div>
+
+    <script>
+        // Function to validate the form
+        function validateForm() {
+            let isValid = true;
+        
+            // Clear all error messages
+            document.querySelectorAll('.error').forEach(function(error) {
+                error.textContent = '';
+            });
+        
+            // First Name Validation
+            const fname = document.getElementById('fname').value;
+            if (!fname) {
+                document.getElementById('fnameError').textContent = 'First Name is required.';
+                isValid = false;
+            }
+        
+            // Last Name Validation
+            const lname = document.getElementById('lname').value;
+            if (!lname) {
+                document.getElementById('lnameError').textContent = 'Last Name is required.';
+                isValid = false;
+            }
+        
+            // House Name Validation
+            const housename = document.getElementById('housename').value;
+            if (!housename) {
+                document.getElementById('housenameError').textContent = 'House Name is required.';
+                isValid = false;
+            }
+        
+            // Landmark Validation
+            const landmark = document.getElementById('landmark').value;
+            if (!landmark) {
+                document.getElementById('landmarkError').textContent = 'Landmark is required.';
+                isValid = false;
+            }
+        
+            // City Validation
+            const city = document.getElementById('city').value;
+            if (!city) {
+                document.getElementById('cityError').textContent = 'City is required.';
+                isValid = false;
+            }
+        
+            // State Validation
+            const state = document.getElementById('state').value;
+            if (!state) {
+                document.getElementById('stateError').textContent = 'State is required.';
+                isValid = false;
+            }
+        
+            // Country Validation
+            const country = document.getElementById('country').value;
+            if (!country) {
+                document.getElementById('countryError').textContent = 'Country is required.';
+                isValid = false;
+            }
+        
+            // Pincode Validation (must be exactly 6 digits)
+            const pincode = document.getElementById('pincode').value;
+            const pincodePattern = /^\d{6}$/;
+            if (!pincode || !pincode.match(pincodePattern)) {
+                document.getElementById('pincodeError').textContent = 'Pincode must be exactly 6 digits.';
+                isValid = false;
+            }
+        
+            // Phone Validation (must be exactly 10 digits)
+            const phone = document.getElementById('phone').value;
+            const phonePattern = /^\d{10}$/;
+            if (!phone || !phone.match(phonePattern)) {
+                document.getElementById('phoneError').textContent = 'Phone number must be exactly 10 digits.';
+                isValid = false;
+            }
+        
+            return isValid;
+        }
+        
+        // Attach validation to the form submission event
+        document.getElementById('addressForm').onsubmit = function(event) {
+            if (!validateForm()) {
+                event.preventDefault(); // Prevent form submission if validation fails
+            }
+        };
+        </script>
+    
+
+    <!-- jquery plugins here-->
+    <script src="js/jquery-1.12.1.min.js"></script>
+    <!-- popper js -->
+    <script src="js/popper.min.js"></script>
+    <!-- bootstrap js -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- easing js -->
+    <script src="js/jquery.magnific-popup.js"></script>
+    <!-- swiper js -->
+    <script src="js/swiper.min.js"></script>
+    <!-- swiper js -->
+    <script src="js/mixitup.min.js"></script>
+    <!-- particles js -->
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.nice-select.min.js"></script>
+    <!-- slick js -->
+    <script src="js/slick.min.js"></script>
+    <script src="js/jquery.counterup.min.js"></script>
+    <script src="js/waypoints.min.js"></script>
+    <script src="js/contact.js"></script>
+    <script src="js/jquery.ajaxchimp.min.js"></script>
+    <script src="js/jquery.form.js"></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script src="js/mail-script.js"></script>
+    <!-- custom js -->
+    <script src="js/custom.js"></script>
+
+</body>
+
+</html>
+    

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Brightness</title>
+    <link rel="icon" href="img/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="css/all.css">
+    <!-- flaticon CSS -->
+    <link rel="stylesheet" href="css/flaticon.css">
+    <link rel="stylesheet" href="css/themify-icons.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <!-- swiper CSS -->
+    <link rel="stylesheet" href="css/slick.css">
+    <!-- style CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .profile-header h1 {
+            font-size: 28px;
+            color: #333;
+            margin: 0;
+        }
+
+        /* Grid Layout for Profile Sections */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .profile-card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .profile-card i {
+            font-size: 40px;
+            margin-bottom: 10px;
+            color: #B08EAD;
+        }
+
+        .profile-card h5 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .profile-card p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Button and Alert */
+        .alert {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            padding: 10px;
+            background-color: #17a2b8;
+            color: white;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .alert.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('../partials/user/header') %>
+
+    <!-- Header -->
+    <header class="container profile-header">
+        <h1>My Profile</h1>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Profile Grid -->
+        <div class="profile-grid">
+            <a href="/profile" class="profile-card">
+                <i class="fa-solid fa-lock"></i>
+                <h5>Your Profile</h5>
+                <p>Edit name and mobile number</p>
+            </a>
+
+            <a href="/address" class="profile-card">
+                <i class="fa-solid fa-location-dot"></i>
+                <h5>Your Address</h5>
+                <p>Edit address for orders and gifts</p>
+            </a>
+
+            <a href="/cart" class="profile-card">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <h5>Your Cart</h5>
+                <p>View and manage items in your cart</p>
+            </a>
+
+            <a href="/order" class="profile-card">
+                <i class="fa-solid fa-box"></i>
+                <h5>Your Orders</h5>
+                <p>Track, return or buy new things</p>
+            </a>
+
+            <a href="/wallet" class="profile-card">
+                <i class="fa-solid fa-wallet"></i>
+                <h5>Wallet</h5>
+                <p>Available amount ₹<span id="walletAmount"><%user.walletBalance%></span></p>
+            </a>
+
+            <a href="/wishlist" class="profile-card">
+                <i class="fa-solid fa-heart"></i>
+                <h5>Wishlist</h5>
+                <p>Your Wishlists</p>
+            </a>
+
+            <a href="/showCoupons" class="profile-card">
+                <i class="fa-solid fa-ticket"></i>
+                <h5>Coupons</h5>
+                <p>Check coupons</p>
+            </a>
+
+
+            <a href="/logout" class="profile-card">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <h5>Logout</h5>
+                <p>Sign out from your account</p>
+            </a>
+        </div>
+    </div>
+
+    <%- include('../partials/user/footer') %>
+    <!-- jquery plugins here-->
+    <script src="js/jquery-1.12.1.min.js"></script>
+    <!-- popper js -->
+    <script src="js/popper.min.js"></script>
+    <!-- bootstrap js -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- easing js -->
+    <script src="js/jquery.magnific-popup.js"></script>
+    <!-- swiper js -->
+    <script src="js/swiper.min.js"></script>
+    <!-- swiper js -->
+    <script src="js/mixitup.min.js"></script>
+    <!-- particles js -->
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.nice-select.min.js"></script>
+    <!-- slick js -->
+    <script src="js/slick.min.js"></script>
+    <script src="js/jquery.counterup.min.js"></script>
+    <script src="js/waypoints.min.js"></script>
+    <script src="js/contact.js"></script>
+    <script src="js/jquery.ajaxchimp.min.js"></script>
+    <script src="js/jquery.form.js"></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script src="js/mail-script.js"></script>
+    <!-- custom js -->
+    <script src="js/custom.js"></script>
+
+</body>
+
+</html>

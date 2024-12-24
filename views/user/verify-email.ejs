@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTP Verification</title>
+  <style>
+    /* Basic Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: #ffffff;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333333;
+    }
+
+    .container p {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #666666;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #333333;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    .form-group button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .form-group button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+
+    .form-group button:hover:not(:disabled) {
+      background-color: #45a049;
+    }
+
+    .timer {
+      text-align: center;
+      margin-top: 10px;
+      color: #333333;
+    }
+
+    .resend-otp {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .resend-otp button {
+      background-color: transparent;
+      border: none;
+      color: #4CAF50;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .resend-otp button:disabled {
+      color: #cccccc;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>OTP Verification</h2>
+    <p>Enter the OTP sent to your email or phone.</p>
+    <% if (error_msg) { %>
+                 
+      <h5 style="color: red; text-align: center;" class="text-danger" >   <%= error_msg %></h5>
+  <% } %>
+    <form id="otp-form" action="/verify-email-otp" method="post">
+      <div class="form-group">
+        <label for="otp">OTP</label>
+        <input type="text" id="otp" name="otp" required maxlength="6" minlength="6">
+      </div>
+      <div class="form-group">
+        <button type="submit" id="submit-btn">Verify OTP</button>
+      </div>
+    </form>
+    <div class="timer">
+      <p id="timer">01:00</p>
+    </div>
+    <div class="resend-otp">
+      <button id="resend-btn">Resend OTP</button>
+    </div>
+  </div>
+
+  <!-- Include SweetAlert -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    let timerElement = document.getElementById('timer');
+    let submitButton = document.getElementById('submit-btn');
+    let resendButton = document.getElementById('resend-btn');
+    let timeLeft = 60; // Set timer in seconds
+    let countdown; // Declare countdown globally
+
+    // Function to start the countdown
+    function startCountdown() {
+      countdown = setInterval(() => {
+        if (timeLeft <= 0) {
+          clearInterval(countdown);
+          timerElement.innerHTML = "00:00";
+          submitButton.disabled = true;
+          resendButton.disabled = false;
+        } else {
+          timeLeft--;
+          let minutes = Math.floor(timeLeft / 60);
+          let seconds = timeLeft % 60;
+          timerElement.innerHTML = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+      }, 1000);
+    }
+
+    // Start the initial countdown
+    startCountdown();
+
+    // Resend OTP button logic
+    resendButton.addEventListener('click', async () => {
+      try {
+        resendButton.disabled = true; // Disable button to prevent multiple clicks
+        clearInterval(countdown); // Clear the previous countdown
+        timeLeft = 60; // Reset timer
+        submitButton.disabled = false;
+        timerElement.innerHTML = "01:00";
+        startCountdown(); // Start a new countdown
+
+        const response = await fetch('/verify-email-otp/resend', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          Swal.fire({
+            icon: 'success',
+            title: 'OTP Sent',
+            text: 'The OTP has been sent to your email or phone.',
+            showConfirmButton: false,
+            timer: 1500
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: result.message,
+            showConfirmButton: false,
+            timer: 2000
+          });
+        }
+      } catch (error) {
+        console.error('Error resending OTP:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while resending OTP, please try again.',
+          showConfirmButton: false,
+          timer: 2000
+        });
+      }
+    });
+
+
+  </script>
+</body>
+</html>

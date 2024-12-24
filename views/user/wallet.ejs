@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zxx">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>pillloMart - Wallet</title>
+    <link rel="icon" href="img/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    
+</head>
+
+<body>
+    <%- include("../partials/user/header") %>
+
+    <!-- Breadcrumb -->
+    <!-- Breadcrumb -->
+<div class="container breadcrumb-container">
+    <h3 class="text-left">
+        <a href="/" style="text-decoration: none;">Home</a> /
+        <a href="/account" style="text-decoration: none;">Account</a> /
+        Wallet
+    </h3>
+</div>
+
+    <!-- Wallet Transactions Section -->
+    <section class="wallet_area section_padding">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <!-- Wallet Transactions Heading, centered -->
+                <h2 class="text-center w-100 mb-0">Wallet Transactions</h2>
+                <!-- Wallet Balance Card -->
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Wallet Balance</h5>
+                        <h3 class="card-text text-success">₹<%= user.walletBalance.toFixed(2) %></h3>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="wallet_inner">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Amount</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Transaction ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (user.walletTransactions && user.walletTransactions.length > 0) { %>
+                                <% user.walletTransactions.forEach(transaction => { %>
+                                    <tr><td></td>
+                                        <td></td>
+                                        <td class="text-left">
+                                            <h5><%= new Date(transaction.date).toLocaleDateString() %></h5>
+                                        </td>
+                                        <td class="text-left">
+                                            <h5 class="<%= transaction.type === 'credit' ? 'text-success' : 'text-danger' %>">
+                                                ₹<%= transaction.amount.toFixed(2) %>
+                                            </h5>
+                                        </td>
+                                        <td class="text-left">
+                                            <h5><%= transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1) %></h5>
+                                        </td>
+                                        <td class="text-left">
+                                            <h5><%= transaction.description || 'No Description' %></h5>
+                                        </td>
+                                        <td class="text-left">
+                                            <h5><%= transaction.transactionId || 'N/A' %></h5>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        <h5>No transactions found</h5>
+                                    </td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+
+    <%- include("../partials/user/footer") %>
+
+    <!-- jquery plugins -->
+    <script src="js/jquery-1.12.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/custom.js"></script>
+</body>
+
+</html>

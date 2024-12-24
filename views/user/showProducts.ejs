@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="zxx">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Brightness</title>
+    <link rel="icon" href="img/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="css/all.css">
+    <!-- flaticon CSS -->
+    <link rel="stylesheet" href="css/flaticon.css">
+    <link rel="stylesheet" href="css/themify-icons.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <!-- swiper CSS -->
+    <link rel="stylesheet" href="css/slick.css">
+    <!-- style CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!--::header part start::-->
+    <%- include("../partials/user/header") %>
+
+    <!-- breadcrumb part start-->
+    <div class="container">
+        <h3>
+            <a href="/" style="text-decoration: none;">Home</a> / 
+            <a href="/showProducts" style="text-decoration: none;">Product</a>
+        </h3>
+    </div>
+    
+    <!-- breadcrumb part end-->
+    
+    <!-- Search Form (Add this section above the product list section) -->
+    <section class="search_part section_padding">
+        <div class="container">
+            <form action="/showProducts" method="GET" class="d-flex justify-content-between search-inner">
+                <div class="input-group">
+                    <input type="text" name="query" class="form-control" placeholder="Search for products..." value="<%= query || '' %>">
+                    <div class="input-group-append">
+                        <!-- Hidden fields to carry over selected category and sort -->
+                        <input type="hidden" name="category" value="<%= selectedCategory || '' %>">
+                        <input type="hidden" name="sort" value="<%= sortOption || '' %>">
+                        
+                        <button class="btn search-button" style="color: #795376;background: #B08EAD;" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+    
+    <!-- product list part start-->
+    <section class="product_list section_padding">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-12 product_sidebar d-flex justify-content-center mb-4">
+                    <!-- Centered Category Dropdown with Increased Width -->
+                    <!-- Category Dropdown -->
+                    <div class="single_sedebar" style="width: 200px; margin-right:10px;">
+                        <div class="select_option">
+                            <div class="dropdown single_sedebar" style="width: 200px; margin-right: 10px;">
+                                <button class="btn btn-primary dropdown-toggle select_option_list" type="button" id="categoryDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Category
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="categoryDropdown" style="width: 200px; margin-right: 10px;">
+                                    <% categories.forEach(category => { %>
+                                        <a class="dropdown-item category-option" 
+                                           href="?category=<%= category._id %>&query=<%= query || '' %>&sort=<%= sortOption || '' %>" 
+                                           data-name="<%= category.name %>">
+                                           <%= category.name %>
+                                        </a>
+                                    <% }) %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- Sort Dropdown -->
+                    <div class="single_sedebar" style="width: 200px; margin-right: 10px;">
+                        <div class="select_option">
+                            <div class="col-md-6 ">
+                                <div class="dropdown single_sedebar" style="width: 200px; margin-right: 10px;">
+                                    <button class="btn btn-primary dropdown-toggle select_option_list" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Sort By
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="sortDropdown" style="width: 200px; margin-right: 10px;">
+                                        <a class="dropdown-item" href="?sort=popularity&category=<%= selectedCategory || '' %>&query=<%= query || '' %>" <%= sortOption === 'popularity' ? 'class="active"' : '' %>>Popularity</a>
+                                        <a class="dropdown-item" href="?sort=price_low_to_high&category=<%= selectedCategory || '' %>&query=<%= query || '' %>" <%= sortOption === 'price_low_to_high' ? 'class="active"' : '' %>>Price: Low to High</a>
+                                        <a class="dropdown-item" href="?sort=price_high_to_low&category=<%= selectedCategory || '' %>&query=<%= query || '' %>" <%= sortOption === 'price_high_to_low' ? 'class="active"' : '' %>>Price: High to Low</a>
+                                        <a class="dropdown-item" href="?sort=average_rating&category=<%= selectedCategory || '' %>&query=<%= query || '' %>" <%= sortOption === 'average_rating' ? 'class="active"' : '' %>>Average Ratings</a>
+                                        <a class="dropdown-item" href="?sort=featured&category=<%= selectedCategory || '' %>&query=<%= query || '' %>" <%= sortOption === 'featured' ? 'class="active"' : '' %>>Featured</a>
+                                        <a class="dropdown-item" href="?sort=new_arrivals&category=<%= selectedCategory || '' %>&query=<%= query || '' %>" <%= sortOption === 'new_arrivals' ? 'class="active"' : '' %>>New Arrivals</a>
+                                        <a class="dropdown-item" href="?sort=a_to_z&category=<%= selectedCategory || '' %>&query=<%= query || '' %>" <%= sortOption === 'a_to_z' ? 'class="active"' : '' %>>A - Z</a>
+                                        <a class="dropdown-item" href="?sort=z_to_a&category=<%= selectedCategory || '' %>&query=<%= query || '' %>" <%= sortOption === 'z_to_a' ? 'class="active"' : '' %>>Z - A</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    
+    <!-- feature part end -->
+
+    <!-- Product Listing Section -->
+    <section class="products untree_co-section product-section before-footer-section">
+        <div class="container">
+            <% if (products.length === 0) { %>
+                <div class="no-products-message">
+                    <p>No products found matching your criteria.</p>
+                </div>
+            <% } else { %>
+               <div class="row">
+                    <% products.forEach((product) => { %>
+                        <div class="col-12 col-md-4 col-lg-3 mb-5">
+                            <a href="/eachProduct?id=<%=product._id %>" class="product-link">
+                                <% if (product.productImages && product.productImages.length > 0) { %>
+                                    <img src="/uploads/re-image/<%= product.productImages[0] %>" 
+                                        class="img-fluid product-thumbnail" 
+                                        alt="<%= product.productName %>" 
+                                        onerror="this.onerror=null;this.src='/styles/images/no_images.jpg';">
+                                <% } else { %>
+                                    <img src="/styles/images/no_images.jpg" 
+                                        class="img-fluid product-thumbnail" 
+                                        alt="No image available">
+                                <% } %>
+                                <h3><%= product.productName %></h3>
+                                <p>
+                                    <del>₹<%= product.mrp %></del> ₹<%= product.price %>
+                                </p>
+                            </a>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } %>
+        </div>
+    </section>
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                    <a class="page-link" style="background-color: #B08EAD; color: #795376;" href="?query=<%= query %>&sort=<%= sortOption %>&category=<%= selectedCategory %>&minPrice=<%= minPrice %>&maxPrice=<%= maxPrice %>&page=<%= i %>">
+                        <%= i %>
+                    </a>
+                </li>
+            <% } %>
+        </ul>
+    </nav>
+    
+    <!-- subscribe part here -->
+    <section class="subscribe_part section_padding mt-3">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="subscribe_part_content">
+                        <h2>Get promotions & updates!</h2>
+                        <p>Seamlessly empower fully researched growth strategies and interoperable internal or “organic” sources credibly innovate granular internal .</p>
+                        <div class="subscribe_form">
+                            <input type="email" placeholder="Enter your mail">
+                            <a href="#" class="btn_1">Subscribe</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- subscribe part end -->
+
+    <!--::footer_part start::-->
+    <%- include("../partials/user/footer") %>
+    <!--::footer_part end::-->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const categoryDropdownButton = document.getElementById('categoryDropdown');
+            const sortDropdownButton = document.getElementById('sortDropdown');
+            const categoryOptions = document.querySelectorAll('.category-option');
+            
+            // Get URL search parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const selectedCategoryId = urlParams.get('category');
+            const selectedSortOption = urlParams.get('sort');
+            
+            // Update category dropdown button text if category is selected
+            if (selectedCategoryId) {
+                const selectedCategory = Array.from(categoryOptions).find(option => 
+                    option.href.includes(selectedCategoryId)
+                );
+                if (selectedCategory) {
+                    const categoryName = selectedCategory.getAttribute('data-name');
+                    categoryDropdownButton.textContent = categoryName; // Update button text
+                }
+            }
+            
+            // Update sort dropdown button text if sort option is selected
+            if (selectedSortOption) {
+                const sortTextMap = {
+                    'popularity': 'Popularity',
+                    'price_low_to_high': 'Price: Low to High',
+                    'price_high_to_low': 'Price: High to Low',
+                    'average_rating': 'Average Ratings',
+                    'featured': 'Featured',
+                    'new_arrivals': 'New Arrivals',
+                    'a_to_z': 'A - Z',
+                    'z_to_a': 'Z - A'
+                };
+                const sortText = sortTextMap[selectedSortOption] || 'Sort By';
+                sortDropdownButton.textContent = sortText; // Update button text
+            }
+        });
+    </script>
+    <!-- jquery plugins here-->
+    <script src="js/jquery-1.12.1.min.js"></script>
+    <!-- popper js -->
+    <script src="js/popper.min.js"></script>
+    <!-- bootstrap js -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- easing js -->
+    <script src="js/jquery.magnific-popup.js"></script>
+    <!-- swiper js -->
+    <script src="js/swiper.min.js"></script>
+    <!-- swiper js -->
+    <script src="js/mixitup.min.js"></script>
+    <!-- particles js -->
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.nice-select.min.js"></script>
+    <!-- slick js -->
+    <script src="js/slick.min.js"></script>
+    <script src="js/jquery.counterup.min.js"></script>
+    <script src="js/waypoints.min.js"></script>
+    <script src="js/contact.js"></script>
+    <script src="js/jquery.ajaxchimp.min.js"></script>
+    <script src="js/jquery.form.js"></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script src="js/mail-script.js"></script>
+    <!-- custom js -->
+    <script src="js/custom.js"></script>
+</body>
+
+</html>

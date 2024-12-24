@@ -1,0 +1,245 @@
+<%- include('../partials/admin/header.ejs') %>
+<section class="cart_area section_padding">
+    <div class="container" style="overflow-x: hidden;">
+        <div class="cart_inner">
+            <h1 class="mb-3">Order Details</h1>
+            <!-- Customer Information -->
+            <div style="margin-bottom: 20px;">
+                <p><strong>Customer Name:</strong> <%= order.userId.name %></p>
+                <p><strong>Phone:</strong> <%= order.userId.phone %></p>
+                <p><strong>Email:</strong> <%= order.userId.email %></p>
+                <p><strong>Delivery Address:</strong></p>
+                <div style="margin-left: 5rem; color: black; font-size: 18px;">
+                    <!-- Full Name -->
+                    <div><strong><%= order.addressId.fname %> <%= order.addressId.lname %></strong></div>
+                    
+                    <!-- Phone -->
+                    <div><strong>Phone: <%= order.addressId.phone %></strong></div>
+
+                    <!-- House Name and City -->
+                    <div><%= order.addressId.housename %>, <%= order.addressId.city %></div>
+                    
+                    <!-- Landmark -->
+                    <div><%= order.addressId.landmark %></div>
+                    
+                    <!-- State, Country, and Pincode -->
+                    <div><%= order.addressId.state %>, <%= order.addressId.country %>, Pin Code: <%= order.addressId.pincode %></div>
+                    
+                </div>
+                
+            </div>
+            
+            <!-- Table of Products -->
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th></th>
+                            <th>Quantity</th>
+                            <th></th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center;">
+                                        <img src="/uploads/re-image/<%= product.productId.productImages[0] %>" 
+                                             alt="<%= product.productId.productName %>" 
+                                             style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;" />
+                                    <span style="font-size: 16px; font-weight: 500;"> <%= product.productId.productName %></span>
+                                </div>
+                            </td>
+                            <td>₹<%= product.productId.price %></td>
+                            <td></td>
+                            <td><%= product.quantity %></td>
+                            <td></td>
+                            <td>₹<%= product.productId.price * product.quantity %></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="order-summary">
+                <!-- Total Amount -->
+                <div class="total" style="text-align: center; color: black; font-weight: bold; font-size: 18px;">
+                    Total Amount: ₹<%= order.totalAmount %>
+                </div>
+                <br>
+
+                <!-- Tracking ID & Date -->
+                <div style="text-align: center; color: black; font-size: 18px;" >
+                    Tracking ID: <%= product.trackingNumber %> | 
+                    Date: <%= order.orderDate.toLocaleDateString() %> 
+                </div>
+
+                <!-- Payment Method & Status -->
+                <div style="text-align: center; color: black; font-size: 18px;" >
+                    Payment Method: <%= order.paymentMethod %> | Payment Status: <%= order.paymentStatus %>
+                </div>
+
+                
+                <div style="text-align: center; color: black; font-size: 18px;" >
+                    Delivery Expected On: 
+                    <script>
+                        var orderDate = new Date("<%= order.orderDate %>");
+                        orderDate.setDate(orderDate.getDate() + 7); // Add 7 days to the order date
+                
+                        var day = ("0" + orderDate.getDate()).slice(-2);
+                        var month = ("0" + (orderDate.getMonth() + 1)).slice(-2); // Months are 0-indexed
+                        var year = orderDate.getFullYear();
+                
+                        var formattedDate = day + '/' + month + '/' + year;
+                        document.write(formattedDate);
+                    </script>
+                </div>
+                <br>
+                <!-- Order Status -->
+                <div class="order-status" style="text-align: center; color: black; font-weight: bold; font-size: 18px;">
+                    Order Status: <%= product.status %>
+                </div>
+
+                <% if (product.return.returnStatus !== '') { %>
+                    <div class="return-details-box" style="background-color: #f8f9fa; padding: 15px; margin-top: 20px; border-radius: 5px; text-align: center;">
+                        <p style="font-size: 16px; color: black;"><strong>Return Reason:</strong> <%= product.return.returnReason || 'N/A' %></p>
+                        <p style="font-size: 16px; color: black;"><strong>Updated Quantity:</strong> <%= product.return.returnQuantity %></p>
+                        <p style="font-size: 16px; color: black;"><strong>Return Status:</strong> <%= product.return.returnStatus || 'N/A' %></p>
+                    </div>
+                <% } %>
+                <!-- Cancel Order Button -->
+                <% if (product.status === 'Processing' || product.status === 'Shipped') { %>
+                    <div class="btn-container" style="text-align: center; margin-top: 20px;">
+                        <form id="cancel-form-<%= order._id %>" action="/admin/cancel/<%= order._id %>/<%= product.trackingNumber %>" method="POST">
+                            <button 
+                                type="button" 
+                                class="cancel-order-btn" 
+                                data-form-id="cancel-form-<%= order._id %>" 
+                                onclick="confirmCancel('<%= order._id %>')" 
+                                style="color: white; background-color: rgb(219, 38, 38); text-decoration: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; border: none; cursor: pointer;">
+                                Cancel Order
+                            </button>
+                        </form>
+                    </div>
+                <% } %>
+                
+                <!-- Return Order Button -->
+                <% if (product.status === 'Delivered') { %>
+                    <div class="btn-container" style="text-align: center; margin-top: 20px;">
+                        <% if (product.return.returnStatus === 'Requested') { %>
+                            <!-- Show Return Order button if returnStatus is "Requested" -->
+                            <form id="returnForm_<%= order._id %>" action="/admin/approveReturn/<%= order._id %>/<%= product.trackingNumber %>" method="POST" style="display: inline-block;">
+                                <input type="hidden" name="orderId" value="<%= order._id %>">
+                                <button type="button" onclick="confirmReturn('<%= order._id %>')" style="color: white; background-color: green; text-decoration: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; border: none; cursor: pointer;">
+                                    Approve Return
+                                </button>
+                            </form>
+                            <form id="rejectForm_<%= order._id %>" action="/admin/rejectReturn/<%= order._id %>/<%= product.trackingNumber %>" method="POST" style="display: inline-block; margin-top: 10px;">
+                                <input type="hidden" name="orderId" value="<%= order._id %>">
+                                <button type="button" onclick="confirmReject('<%= order._id %>')" style="color: white; background-color: red; text-decoration: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; border: none; cursor: pointer;">
+                                    Reject Return
+                                </button>
+                            </form>
+                        <% } else if (product.return.returnStatus === 'Pickup pending') { %>
+                            <div class="order-status" style="text-align: center; color: black; font-weight: bold; font-size: 18px;">
+                                Return Status: <%= product.return.returnStatus %>
+                            </div>
+                        <% } %>
+                    </div>
+                <% } %>
+                <div class="btn-container" style="text-align: center; margin-top: 20px;">
+                <% if (product.return.returnStatus === 'Approved') { %>
+                    <!-- Show Return Order button if returnStatus is "Requested" -->
+                    <form id="pickupSuccessForm_<%= order._id %>" action="/admin/pickupSuccess/<%= order._id %>/<%= product.trackingNumber %>" method="POST" style="display: inline-block; margin-top: 10px;">
+                        <input type="hidden" name="orderId" value="<%= order._id %>">
+                        <button type="button" onclick="confirmPickup('<%= order._id %>')" style="color: white; background-color: green; text-decoration: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; border: none; cursor: pointer;">
+                            Pickup Success
+                        </button>
+                    </form>
+                <% } %>
+                </div>
+                <!-- Back Button -->
+                <div class="btn-container" style="text-align: center; margin-top: 20px;">
+                    <a href="/admin/orders" style="color: white; background-color: black; text-decoration: none; padding: 10px 20px; font-size: 16px; border-radius: 5px;">Back to Orders</a>
+                </div>
+
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+</section>
+<%- include('../partials/admin/footer.ejs') %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmCancel(orderId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you really want to cancel this product?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, cancel it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`cancel-form-${orderId}`).submit();
+            }
+        });
+    }
+    function confirmReturn(orderId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to approve the return of this order?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, approve it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form if confirmed
+                document.getElementById(`returnForm_${orderId}`).submit();
+            }
+        });
+    }
+    function confirmReject(orderId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to reject the return of this order?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, reject it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form if confirmed
+                document.getElementById(`rejectForm_${orderId}`).submit();
+            }
+        });
+    }
+    function confirmPickup(orderId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to mark the pickup as successful for this order?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#28a745',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, mark as success!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form if confirmed
+                document.getElementById(`pickupSuccessForm_${orderId}`).submit();
+            }
+        });
+    }
+</script>

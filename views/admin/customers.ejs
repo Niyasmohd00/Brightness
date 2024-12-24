@@ -1,0 +1,119 @@
+<%- include('../partials/admin/header.ejs') %>
+
+<div class="container mt-4">
+    <!-- Page Title -->
+    <h1 class="mb-3">Customers</h1>
+
+    <!-- Search Bar -->
+    <div class="row mb-4">
+        <div class="col-md-4 ml-auto">
+            <input type="text" class="form-control" id="searchCustomer" placeholder="Search Customers...">
+        </div>
+    </div>
+
+    <!-- Customer List Table -->
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="customerTableBody">
+            <% data.forEach(customer => { %>
+                <tr class="<%= customer.isBlocked ? 'table-danger' : '' %>">
+                    <td><%= customer.name %></td>
+                    <td><%= customer.email %></td>
+                    <td><%= customer.phone %></td>
+                    <td>
+                        <!-- View Customer Detail (Eye icon) -->
+                        <a href="/admin/customers/<%= customer._id %>" class="text-dark mr-2">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <!-- Delete Customer (Trash icon) -->
+                        <a href="#" class="text-dark mr-2" onclick="confirmDelete('<%= customer._id %>')">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    
+                        <!-- Block/Unblock Customer (Button) -->
+                        <button class="btn <%= customer.isBlocked ? 'btn-success' : 'btn-danger' %> btn-sm border-0" style="width: 80px;" onclick="toggleBlockCustomer('<%= customer._id %>', <%= customer.isBlocked %>)">
+                            <%= customer.isBlocked ? 'Unblock' : 'Block' %>
+                        </button>
+                    </td>
+                    
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+    
+    <!-- Pagination Controls -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                </li>
+            <% } %>
+        </ul>
+    </nav>
+</div>
+
+<%- include('../partials/admin/footer.ejs') %>
+
+<!-- JavaScript for handling actions -->
+<script>
+    // Search Functionality
+    document.getElementById("searchCustomer").addEventListener("input", function () {
+        const filter = this.value.toLowerCase().trim(); // Convert search input to lowercase and trim spaces
+        const rows = document.querySelectorAll("#customerTableBody tr");
+
+        rows.forEach(row => {
+            const name = row.children[0].textContent.toLowerCase(); // Convert name to lowercase
+            const email = row.children[1].textContent.toLowerCase(); // Convert email to lowercase
+            const phone = row.children[2].textContent.toLowerCase(); // Convert phone to lowercase
+
+            // Check if each field starts with the search filter
+            if (name.startsWith(filter) || email.startsWith(filter) || phone.startsWith(filter)) {
+                row.style.display = ""; // Show row if condition is met
+            } else {
+                row.style.display = "none"; // Hide row otherwise
+            }
+        });
+    });
+
+    // Block/Unblock Toggle Function
+    function toggleBlockCustomer(customerId, isBlocked) {
+        const action = isBlocked ? "unblock" : "block";
+        fetch(`/admin/customers/${action}/${customerId}`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Customer ${action}ed successfully.`);
+                window.location.reload();
+            } else {
+                alert(`Error ${action}ing customer.`);
+            }
+        });
+    }
+
+    function confirmDelete(customerId) {
+    if (confirm("Are you sure you want to delete this customer? This action cannot be undone.")) {
+        fetch(`/admin/customers/delete/${customerId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Customer deleted successfully.");
+                window.location.reload(); // Refresh the page to see the updated customer list
+            } else {
+                alert("Error deleting customer.");
+            }
+        });
+    }
+}
+</script>

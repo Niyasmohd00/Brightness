@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="zxx">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>pillloMart - Order Details</title>
+    <link rel="icon" href="img/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <%- include("../partials/user/header") %>
+
+    <!-- Breadcrumb -->
+    <div class="container">
+        <h3>
+            <a href="/" style="text-decoration: none;">Home</a> / 
+            Orders
+        </h3>
+    </div>
+
+    <!-- Order Details Section -->
+    <section class="order_area section_padding">
+        <div class="container" style="overflow-x: hidden;">
+            <h2 class="text-center mb-4">Order Details</h2>
+            <div class="order_inner">
+                <% if (error_msg) { %>
+                    <div class="text-center ">
+                        <p class="text-danger"><%= error_msg %></p>
+                    </div>
+                <% } %>
+                <% if (success_msg) { %>
+                    <div class="text-center ">
+                        <p class="text-success"><%= success_msg %></p>
+                    </div>
+                <% } %>
+                
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Tracking ID</th>
+                                <th scope="col">Product</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Total</th>
+                                <th scope="col">Offer</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Payment</th>
+                                <th scope="col">More</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% orders.forEach(order => { %> <!-- Loop through each order -->
+                                <!-- Subtitle for Order -->
+                                <tr>
+                                    <td colspan="8" style="font-weight: bold; text-align: left;padding-top: 10px;">
+                                        Order ID: <%= order.orderId %> | Date: <%= new Date(order.orderDate).toLocaleDateString() %> | Total: ₹<%= order.totalAmount %> | Coupon Discount: <%= order.couponDiscount %>
+                                        <% if (order.paymentStatus === 'Failed' || order.paymentStatus === 'Pending') { %>                                         
+                                            | <span style="color: red;">Payment Pending</span>
+                                            <button 
+                                                class="btn btn-warning retryPaymentBtn" 
+                                                style="float: center; padding: 5px 10px; font-size: 14px;" 
+                                                data-order-id="<%= order.orderId %>" 
+                                                data-order-total="<%= order.totalAmount %>"
+                                                data-order-coupon-discount="<%= order.couponDiscount %>"
+                                            >
+                                                Retry Payment
+                                            </button>
+                                        <% } else { %>    
+                                            | Payment Status: <%= order.paymentStatus %>
+                                        <% } %>  
+                                        <% if (order.isCancelable) { %>
+                                            <button class="btn btn-danger cancelOrderBtn" data-order-id="<%= order._id %>" style="margin-left: 20px; float: right;">Cancel Order</button>
+                                        <% } %>
+                                    </td>                                    
+                                </tr>
+                                <% order.products.forEach(product => { %> <!-- Loop through each product in the order -->
+                                    <tr>
+                                        <td class="text-left">
+                                            <h5><%= product.trackingNumber || 'N/A' %></h5> <!-- Render Tracking ID or 'N/A' if not present -->
+                                        </td>
+                                        <td class="text-left">
+                                            <h5><%= product.productId.productName || 'Unknown Product' %></h5> <!-- Render product name -->
+                                        </td>
+                                        <td class="text-left">
+                                            <h5><%= product.quantity %></h5> <!-- Product quantity -->
+                                        </td>
+                                        <td class="text-left">
+                                            <h5>₹<%= product.productId.price*product.quantity.toFixed(2) %></h5> <!-- Total order amount -->
+                                        </td>
+                                        <td class="text-left">
+                                            <h5><%= product.offerAmount.toFixed(2) %></h5> <!-- Order date -->
+                                        </td>
+                                        <td class="text-left">
+                                            <h5><%= product.status || 'N/A' %></h5> <!-- Product status -->
+                                        </td>
+                                        <td class="text-left">
+                                            <h5><%= order.paymentStatus || 'N/A' %></h5> <!-- Payment status -->
+                                        </td>
+                                        <td class="text-left">
+                                            <a href="/viewOrder/<%= order._id %>/<%= product.trackingNumber %>" class="btn btn-primary" style="background-color: #B08EAD; color: white; border: none; padding: 5px 10px; font-size: 14px;">
+                                                View
+                                            </a> <!-- View order button -->
+                                        </td>
+                                    </tr>
+                                <% }); %> <!-- End of loop for products -->
+                            <% }); %> <!-- End of loop for orders -->
+                        </tbody>                                              
+                    </table>                    
+            </div>
+        </div>
+        </div>
+    </section>
+    <%- include("../partials/user/footer") %>
+
+    <!-- jquery plugins -->
+    <script src="js/jquery-1.12.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/custom.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    document.querySelectorAll('.cancelOrderBtn').forEach(button => {
+        button.addEventListener('click', function() {
+            const orderId = this.getAttribute('data-order-id');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to cancel this order?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, cancel it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Redirect to cancelOrder route after confirmation
+                    window.location.href = `/cancelOrder/${orderId}`;
+                }
+            });
+        });
+    });
+    </script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+    // Click event for Retry Payment button
+    $('.retryPaymentBtn').click(function () {
+        const orderId = $(this).data('order-id');  // Get the order ID from the button's data attribute
+        $.ajax({
+            url: "/retryPayment",  // Endpoint for retrying the payment
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                orderId: orderId  // Send only the orderId in the request
+            }),
+            success: function (res) {
+                if (res.success) {
+                    const options = {
+                        key: res.key,
+                        amount: res.amount,
+                        currency: "INR",
+                        name: "Brightness",
+                        description: "Order Payment",
+                        image: "https://dummyimage.com/600x400/000/fff",
+                        order_id: res.order_id,
+                        handler: function (response) {
+                            // Send payment response to server
+                            $.ajax({
+                                url: "/verifyRazorpayPayment",
+                                type: "POST",
+                                contentType: "application/json",
+                                data: JSON.stringify(response),
+                                success: function (verifyRes) {
+                                    // After payment verification, redirect to orderSuccess page
+                                    if (verifyRes.success) {
+                                        window.location.href = `/orderSuccess?orderId=${verifyRes.orderId}`;
+                                    } else {
+                                        window.location.href = `/paymentFailed`;
+                                    }
+                                },
+                                error: function () {
+                                    window.location.href = `/paymentFailed`;
+                                },
+                            });
+                        },
+                        prefill: {
+                            name: "Customer Name",
+                            email: "customer@example.com",
+                            contact: "8907899192",
+                        },
+                        notes: {
+                            description: "Order payment for Brightness",
+                        },
+                        theme: {
+                            color: "#2300a3",
+                        },
+                        modal: {
+                            escape: false,
+                            ondismiss: function () {
+                                window.location.href = `/paymentFailed`;
+                            },
+                        },
+                    };
+
+                    const razorpayObject = new Razorpay(options);
+
+                    razorpayObject.on('payment.failed', function () {
+                        window.location.href = `/paymentFailed`;
+                    })
+                    razorpayObject.open();
+                } else {
+                    window.location.href = `/paymentFailed`;
+                }
+            },
+            error: function () {
+                alert("Error creating Razorpay order.");
+            },
+        });
+    });
+});
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Brightness</title>
+    <link rel="icon" href="img/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="css/all.css">
+    <!-- flaticon CSS -->
+    <link rel="stylesheet" href="css/flaticon.css">
+    <link rel="stylesheet" href="css/themify-icons.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <!-- swiper CSS -->
+    <link rel="stylesheet" href="css/slick.css">
+    <!-- style CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .form-container {
+            background-color: #fff; /* White background for the form */
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+            margin-bottom: 5px; /* Reduce bottom margin for space between input and error message */
+        }
+
+        .form-group input:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        .form-group .error-message {
+            color: #dc3545;
+            font-size: 12px;
+            position: absolute;
+            bottom: -18px;
+            left: 0;
+            width: 100%;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .alert {
+            color: #721c24;
+       
+            
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .alert.success {
+            color: #155724;
+          
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('../partials/user/header') %>
+
+    <div class="form-container">
+        <h2>Address Form</h2>
+        <% if (error_msg) { %>
+            <div class="alert">
+                <%= error_msg %>
+            </div>
+        <% } %>
+        <% if (success_msg) { %>
+            <div class="alert success">
+                <%= success_msg %>
+            </div>
+        <% } %>
+        
+        <form id="addressForm" method="post" action="/add-address">
+            <div class="form-group">
+                <label for="fname">First Name:</label>
+                <input type="text" id="fname" name="fname" placeholder="Enter First Name">
+                <div class="error-message" id="fname-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="lname">Last Name:</label>
+                <input type="text" id="lname" name="lname" placeholder="Enter Last Name">
+                <div class="error-message" id="lname-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="housename">House Name:</label>
+                <input type="text" id="housename" name="housename" placeholder="Enter House Name">
+                <div class="error-message" id="housename-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="landmark">Land Mark:</label>
+                <input type="text" id="landmark" name="landmark" placeholder="Enter Land Mark">
+                <div class="error-message" id="landmark-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" placeholder="Enter City">
+                <div class="error-message" id="city-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="state">State:</label>
+                <input type="text" id="state" name="state" placeholder="Enter State">
+                <div class="error-message" id="state-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="country">Country:</label>
+                <input type="text" id="country" name="country" placeholder="Enter Country">
+                <div class="error-message" id="country-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="pincode">Pincode:</label>
+                <input type="number" id="pincode" name="pincode" placeholder="Enter Pincode">
+                <div class="error-message" id="pincode-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone:</label>
+                <input type="tel" id="phone" name="phone" placeholder="Enter Mobile No">
+                <div class="error-message" id="phone-error"></div>
+            </div>
+            <button class="btn" type="submit">Save Address</button>
+        </form>
+    </div>
+
+    <%- include('../partials/user/footer') %>
+
+    <script>
+        document.getElementById('addressForm').addEventListener('submit', function(event) {
+    let valid = true;
+
+    // Reset all error messages
+    const errorMessages = document.querySelectorAll('.error-message');
+    errorMessages.forEach(msg => msg.textContent = '');
+
+    // First Name Validation (only letters, no numbers)
+    const fname = document.getElementById('fname');
+    const fnameError = document.getElementById('fname-error');
+    if (!fname.value.trim()) {
+        fnameError.textContent = 'First Name is required.';
+        valid = false;
+    } else if (!/^[A-Za-z]+$/.test(fname.value)) {
+        fnameError.textContent = 'First Name should contain only letters.';
+        valid = false;
+    }
+
+    // Last Name Validation (only letters, no numbers)
+    const lname = document.getElementById('lname');
+    const lnameError = document.getElementById('lname-error');
+    if (!lname.value.trim()) {
+        lnameError.textContent = 'Last Name is required.';
+        valid = false;
+    } else if (!/^[A-Za-z]+$/.test(lname.value)) {
+        lnameError.textContent = 'Last Name should contain only letters.';
+        valid = false;
+    }
+
+    // House Name Validation (no numbers, special characters allowed)
+    const housename = document.getElementById('housename');
+    const housenameError = document.getElementById('housename-error');
+    if (!housename.value.trim()) {
+        housenameError.textContent = 'House Name is required.';
+        valid = false;
+    }
+
+    // Landmark Validation (alphanumeric allowed, no special characters)
+    const landmark = document.getElementById('landmark');
+    const landmarkError = document.getElementById('landmark-error');
+    if (!landmark.value.trim()) {
+        landmarkError.textContent = 'Landmark is required.';
+        valid = false;
+    }
+
+    // City Validation (only letters and spaces)
+    const city = document.getElementById('city');
+    const cityError = document.getElementById('city-error');
+    if (!city.value.trim()) {
+        cityError.textContent = 'City is required.';
+        valid = false;
+    } else if (!/^[A-Za-z\s]+$/.test(city.value)) {
+        cityError.textContent = 'City should contain only letters and spaces.';
+        valid = false;
+    }
+
+    // State Validation (only letters and spaces)
+    const state = document.getElementById('state');
+    const stateError = document.getElementById('state-error');
+    if (!state.value.trim()) {
+        stateError.textContent = 'State is required.';
+        valid = false;
+    } else if (!/^[A-Za-z\s]+$/.test(state.value)) {
+        stateError.textContent = 'State should contain only letters and spaces.';
+        valid = false;
+    }
+
+    // Country Validation (only letters and spaces)
+    const country = document.getElementById('country');
+    const countryError = document.getElementById('country-error');
+    if (!country.value.trim()) {
+        countryError.textContent = 'Country is required.';
+        valid = false;
+    } else if (!/^[A-Za-z\s]+$/.test(country.value)) {
+        countryError.textContent = 'Country should contain only letters and spaces.';
+        valid = false;
+    }
+
+    // Pincode Validation (exactly 6 digits)
+    const pincode = document.getElementById('pincode');
+    const pincodeError = document.getElementById('pincode-error');
+    if (!pincode.value.trim()) {
+        pincodeError.textContent = 'Pincode is required.';
+        valid = false;
+    } else if (!/^\d{6}$/.test(pincode.value)) {
+        pincodeError.textContent = 'Pincode must be 6 digits.';
+        valid = false;
+    }
+
+    // Phone Number Validation (exactly 10 digits)
+    const phone = document.getElementById('phone');
+    const phoneError = document.getElementById('phone-error');
+    if (!phone.value.trim()) {
+        phoneError.textContent = 'Phone number is required.';
+        valid = false;
+    } else if (!/^\d{10}$/.test(phone.value)) {
+        phoneError.textContent = 'Phone number must be 10 digits.';
+        valid = false;
+    }
+
+    // If validation fails, prevent form submission
+    if (!valid) {
+        event.preventDefault();
+    }
+});
+
+    </script>

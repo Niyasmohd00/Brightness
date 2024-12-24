@@ -1,0 +1,437 @@
+<%- include('../partials/admin/header.ejs') %>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
+</head>
+<style>
+    .error-message {
+        color: red;
+    }
+    .thumbnails-container {
+        display: flex;
+        overflow-x: auto;
+    }
+    .thumbnail {
+        margin-right: 10px;
+        max-width: 100px;
+        max-height: 100px;
+    }
+    .image-input-container {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
+    }
+    .image-preview {
+        max-width: 300px;
+        max-height: 200px;
+        margin-top: 10px;
+    }
+    .crop-container {
+        display: none;
+        margin-top: 10px;
+    }
+    .remove-icon {
+        display: none;
+        position: absolute;
+        top: 30px;
+        right: 30px;
+        cursor: pointer;
+        color: red;
+        font-size: 24px;
+        font-weight: bold;
+    }
+</style>
+
+<div>
+    <h1>Add New Product</h1>
+    <% if (locals.message) { %>
+        <div class="container alert bg-danger text-white text-center" style="max-width: 600px;"><%= locals.message %></div>
+    <% } %>
+    <form id="addProductForm" action="/admin/addProduct" method="POST" enctype="multipart/form-data" onsubmit="return formValidation()">
+        <div class="container" style="max-width: 600px;">
+            <div class="row">
+                <!-- Product Name Field -->
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="name">Product Name</label>
+                        <input type="text" class="form-control" id="name" name="productName" >
+                        <div id="errorName" class="error-message"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Category Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select class="form-control" id="category" name="category" required>
+                            <% categories.forEach(category => { %>
+                                <option value="<%= category._id %>"><%= category.name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Description Field -->
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" ></textarea>
+                        <div id="errorDescription" class="error-message"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Features Field -->
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="features">Features</label>
+                        <textarea class="form-control" id="features" name="features" rows="6"></textarea>
+                        <div id="errorFeatures" class="error-message"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Available Colors Field -->
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="availableColors">Available Colors</label>
+                        <input type="text" class="form-control" id="availableColors" name="availableColors" >
+                        <div id="errorAvailableColors" class="error-message"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Size Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="size">Size</label>
+                        <input type="text" class="form-control" id="size" name="size" >
+                        <div id="errorSize" class="error-message"></div>
+                    </div>
+                </div>
+
+                <!-- Stock Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="stock">Stock</label>
+                        <input type="number" class="form-control" id="stock" name="stock" >
+                        <div id="errorStock" class="error-message"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- MRP Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="mrp">MRP</label>
+                        <input type="number" class="form-control" id="mrp" name="mrp" >
+                        <div id="errorMRP" class="error-message"></div>
+                    </div>
+                </div>
+
+                <!-- Price Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="price">Price</label>
+                        <input type="number" class="form-control" id="price" name="price" >
+                        <div id="errorPrice" class="error-message"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Status Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select class="form-control" id="status" name="status" required>
+                            <option value="Available">Available</option>
+                            <option value="Out of stock">Out of stock</option>
+                            <option value="Discontinued">Discontinued</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-2">
+                <div class="card-header">
+                    <h4>Choose images</h4>
+                </div>
+                <div class="border row">
+                    <div id="addedImagesContainer" class="thumbnails-container"></div>
+                </div>
+                <div class="row">
+                    <% for (let i = 1; i <= 4; i++) { %>
+                        <div id="images" class="col-md-6 image-input-container">
+                            <input class="form-control" type="file" name="images" id="input<%= i %>" accept="image/*" onchange="handleImageSelect(event, <%= i %>)">
+                            <img src="" id="imgView<%= i %>" class="image-preview" alt="Image Preview">
+                            <div class="crop-container" id="cropContainer<%= i %>">
+                                <button type="button" id="saveButton<%= i %>" class="btn-sm btn-primary mt-2" onclick="saveCrop(<%= i %>)">Save Cropped Image</button>
+                            </div>
+                            <img src="" alt="Cropped Image Preview" id="croppedImg<%= i %>" style="display:none; max-width: 200px;">
+                            <span class="remove-icon" id="removeIcon<%= i %>" onclick="removeImage(<%= i %>)">&times;</span>
+                            <div id="errorImages<%= i %>" class="error-message"></div> <!-- Specific error container for each image -->
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+            <!-- Submit and Cancel Buttons -->
+            <div class="row">
+                <div class="col-md-12 text-right mt-3">
+                    <button type="submit" class="btn btn-primary" onclick="formValidation()">Add Product</button>
+                    <a href="/admin/products" class="btn btn-secondary ml-2">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+<%- include('../partials/admin/footer.ejs') %>
+
+<style>
+    .error-message {
+      color: red;
+      font-size: 0.875rem;
+    }
+</style>
+
+<script>
+    // Get form and fields by correct IDs
+const addProductForm = document.getElementById("addProductForm");
+const pName = document.getElementById("name");
+const pDescription = document.getElementById("description");
+const pFeatures = document.getElementById("features");
+const pAvailableColors = document.getElementById("availableColors");
+const pSize = document.getElementById("size");
+const pStock = document.getElementById("stock");
+const pMRP = document.getElementById("mrp");
+const pPrice = document.getElementById("price");
+
+// Error elements
+const errorName = document.getElementById("errorName");
+const errorDescription = document.getElementById("errorDescription");
+const errorFeatures = document.getElementById("errorFeatures");
+const errorAvailableColors = document.getElementById("errorAvailableColors");
+const errorSize = document.getElementById("errorSize");
+const errorStock = document.getElementById("errorStock");
+const errorMRP = document.getElementById("errorMRP");
+const errorPrice = document.getElementById("errorPrice");
+
+// Validation functions for each field
+function productNameValidation() {
+    if (pName.value.trim() === "") {
+        errorName.style.display = "block";
+        errorName.innerHTML = "Please enter Product Name";
+    } else {
+        errorName.style.display = "none";
+        errorName.innerHTML = "";
+    }
+}
+
+
+
+function productDescriptionValidation() {
+    if (pDescription.value.trim() === "") {
+        errorDescription.style.display = "block";
+        errorDescription.innerHTML = "Please enter valid Product Description";
+    } else {
+        errorDescription.style.display = "none";
+        errorDescription.innerHTML = "";
+    }
+}
+
+function productFeaturesValidation() {
+    if (pFeatures.value.trim() === "") {
+        errorFeatures.style.display = "block";
+        errorFeatures.innerHTML = "Please enter valid Product Features";
+    } else {
+        errorFeatures.style.display = "none";
+        errorFeatures.innerHTML = "";
+    }
+}
+
+function productAvailableColorsValidation() {
+    if (pAvailableColors.value.trim() === "") {
+        errorAvailableColors.style.display = "block";
+        errorAvailableColors.innerHTML = "Please enter valid Available Colors";
+    } else {
+        errorAvailableColors.style.display = "none";
+        errorAvailableColors.innerHTML = "";
+    }
+}
+
+function productSizeValidation() {
+    if (pSize.value.trim() === "" ) {
+        errorSize.style.display = "block";
+        errorSize.innerHTML = "Please enter valid Size";
+    } else {
+        errorSize.style.display = "none";
+        errorSize.innerHTML = "";
+    }
+}
+
+function productStockValidation() {
+    if (pStock.value.trim() === "" || pStock.value.trim()<0 ) {
+        errorStock.style.display = "block";
+        errorStock.innerHTML = "Please enter valid Stock quantity";
+    } else {
+        errorStock.style.display = "none";
+        errorStock.innerHTML = "";
+    }
+}
+
+function productMRPValidation() {
+    if (pMRP.value.trim() === "" || pMRP.value.trim()<=0 ) {
+        errorMRP.style.display = "block";
+        errorMRP.innerHTML = "Please enter valid MRP";
+    } else if(pMRP.value.trim()<=pPrice.value.trim()){
+        errorMRP.style.display = "block";
+        errorMRP.innerHTML = "Price Should be less than or equal to MRP";
+    }else {
+        errorMRP.style.display = "none";
+        errorMRP.innerHTML = "";
+    }
+}
+
+function productPriceValidation() {
+    if (pPrice.value.trim() === "" || pPrice.value.trim()<=0 ) {
+        errorPrice.style.display = "block";
+        errorPrice.innerHTML = "Please enter valid Price";
+    } else if(pMRP.value.trim()<=pPrice.value.trim()){
+        errorPrice.style.display = "block";
+        errorPrice.innerHTML = "Price Should be less than or equal to MRP";
+    }else {
+        errorPrice.style.display = "none";
+        errorPrice.innerHTML = "";
+    }
+}
+
+function productImageValidation() {
+    let valid = true;
+    for (let i = 1; i <= 4; i++) {
+        const inputField = document.getElementById(`input${i}`);
+        const errorContainer = document.getElementById(`errorImages${i}`);
+        const file = inputField.files[0];
+
+        errorContainer.textContent = '';
+
+        if (!file) {
+            errorContainer.textContent = "Please upload an image.";
+            valid = false;
+        }
+    }
+
+    if (!valid) {
+        return false;
+    }
+    return true;
+}
+
+
+let croppers = {};
+
+function handleImageSelect(event, index) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const imgView = document.getElementById(`imgView${index}`);
+            imgView.src = e.target.result;
+
+            if (croppers[index]) {
+                croppers[index].destroy();
+            }
+
+            croppers[index] = new Cropper(imgView, {
+                aspectRatio: 1,
+                viewMode: 1,
+                guides: true,
+                background: false,
+                autoCropArea: 1,
+                zoomable: true,
+            });
+
+            const cropContainer = document.getElementById(`cropContainer${index}`);
+            cropContainer.style.display = 'block';
+
+            const saveButton = document.getElementById(`saveButton${index}`);
+            saveButton.onclick = function () {
+                const croppedCanvas = croppers[index].getCroppedCanvas({
+                    width: 440,
+                    height: 440
+                });
+                const croppedImage = document.getElementById(`croppedImg${index}`);
+                croppedImage.src = croppedCanvas.toDataURL('image/jpeg');
+
+                imgView.style.display = 'none';
+                croppedImage.style.display = 'block';
+                saveButton.style.display = 'none';
+                document.getElementById(`removeIcon${index}`).style.display = 'block';
+
+                croppedCanvas.toBlob((blob) => {
+                    const input = document.getElementById(`input${index}`);
+                    const fileName = `cropped-img-${new Date().getTime()}-${index}.png`;
+                    const file = new File([blob], fileName, { type: 'image/png' });
+
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    input.files = dataTransfer.files;
+                });
+
+                croppers[index].destroy();
+                croppers[index] = null;
+            };
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+    function removeImage(index) {
+        const imgView = document.getElementById(`imgView${index}`);
+        const croppedImage = document.getElementById(`croppedImg${index}`);
+        const removeIcon = document.getElementById(`removeIcon${index}`);
+        const saveButton = document.getElementById(`saveButton${index}`);
+        const cropContainer = document.getElementById(`cropContainer${index}`);
+
+        imgView.src = '';
+        imgView.style.display = 'block';
+        croppedImage.style.display = 'none';
+        removeIcon.style.display = 'none';
+        saveButton.style.display = 'block';
+        cropContainer.style.display = 'none';
+
+        document.getElementById(`input${index}`).value = '';
+    }
+
+    function formValidation() {
+    productNameValidation();
+    productDescriptionValidation();
+    productFeaturesValidation();
+    productAvailableColorsValidation();
+    productSizeValidation();
+    productStockValidation();
+    productMRPValidation();
+    productPriceValidation();
+    productImageValidation();
+    
+    // Return false if there are any validation errors
+    return (
+        errorName.innerHTML === "" &&
+        errorDescription.innerHTML === "" &&
+        errorFeatures.innerHTML === "" &&
+        errorAvailableColors.innerHTML === "" &&
+        errorSize.innerHTML === "" &&
+        errorStock.innerHTML === "" &&
+        errorMRP.innerHTML === "" &&
+        errorPrice.innerHTML === ""
+    );
+}
+</script>
+

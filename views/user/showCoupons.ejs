@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zxx">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>pillloMart - Order Details</title>
+    <link rel="icon" href="img/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <%- include("../partials/user/header") %>
+    <!-- breadcrumb part start-->
+    <div class="container">
+        <h3>
+            <a href="/" style="text-decoration: none;">Home</a> / 
+            <a href="/account" style="text-decoration: none;">Account</a>/Coupons
+        </h3>
+    </div>
+    <section class="coupon_area section_padding">
+        <div class="container" style="overflow-x: hidden;">
+            <h2 class="text-center mb-4">Coupon Details</h2>
+            <div class="coupon_inner">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Coupon Code</th>
+                                <th scope="col">Discount</th>
+                                <th scope="col">Expiry Date</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Min Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% coupons.forEach(coupon => { %> <!-- Loop through each coupon -->
+                                <tr>
+                                    <td class="text-left">
+                                       <h5><%= coupon.couponCode || 'N/A' %></h5> <!-- Render Coupon Code -->
+                                    </td>
+                                    <td class="text-left">
+                                        <h5><%= coupon.discountValue %> <%= coupon.discountType === 'percentage' ? '%' : 'Rs' %></h5> <!-- Discount Value -->
+                                    </td>
+                                    <td class="text-left">
+                                        <h5><%= new Date(coupon.expiryDate).toLocaleDateString() %></h5> <!-- Expiry Date -->
+                                    </td>
+                                    <td class="text-left">
+                                        <h5><%= coupon.expiryDate > currentDate ? 'Available' : 'Expired' %></h5> <!-- Coupon Status -->
+                                    </td>
+                                    <td class="text-left">
+                                        <h5>₹<%= coupon.minimumPrice %></h5> <!-- Minimum Total -->
+                                    </td>
+                                </tr>
+                            <% }); %> <!-- End of loop for coupons -->
+                        </tbody>
+                    </table>                    
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <%- include("../partials/user/footer") %>
+
+    <!-- jquery plugins -->
+    <script src="js/jquery-1.12.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/custom.js"></script>
+</body>
+
+</html>

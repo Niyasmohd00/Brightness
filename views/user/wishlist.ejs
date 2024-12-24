@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="zxx">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>pillloMart</title>
+    <link rel="icon" href="img/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="css/all.css">
+    <!-- icon CSS -->
+    <link rel="stylesheet" href="css/flaticon.css">
+    <link rel="stylesheet" href="css/themify-icons.css">
+    <!-- magnific popup CSS -->
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/nice-select.css">
+    <!-- style CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <%- include("../partials/user/header") %>
+    <div class="container">
+      <h3>
+          <a href="/" style="text-decoration: none;">Home</a> / 
+          <a href="/wishlist" style="text-decoration: none;">Wishlist</a>
+      </h3>
+  </div>
+  
+<!--================Cart Area =================-->
+<% if (success_msg) { %>
+  <h5 class="text-center text-success mb-3"><%= success_msg %></h5>
+<% } %>
+<% if (error_msg) { %>
+  <h5 class="text-center text-danger mb-3"><%= error_msg %></h5>
+<% } %>
+
+<section class="cart_area section_padding">
+    <div class="container" style="overflow-x: hidden;">
+      <div class="cart_inner">
+        <div class="table-responsive">
+          <% if (wishlist.items && wishlist.items.length > 0) { %>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Product</th>
+                  <th>Status</th>
+                  <th></th>
+                  <th></th>
+                  <th scope="col" class="text-left">Price</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <% wishlist.items.forEach(item => { %>
+                  <tr>
+                    <td>
+                      <div class="media">
+                        <div class="d-flex">
+                          <a href="/eachProduct?id=<%= item.productId._id %>" class="product-link">
+                            <img src="/uploads/re-image/<%= item.productId.productImages[0] %>" 
+                                 alt="<%= item.productId.productName %>" 
+                                 class="img-fluid cart-item-img" />
+                          </a>
+                        </div>
+                        <div class="media-body">
+                          <p class="product-name"><%= item.productId.productName %></p>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-left">
+                      <h5><%= item.productId.stock > 0 ? 'Available' : 'Sold Out' %></h5>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-left">
+                      <h5><del>₹<%= item.productId.mrp %></del> ₹<%= item.productId.price %></h5>
+                    </td>
+                    <td></td>
+                    <td class="align-left">
+                      <form action="/addToCart/<%= item.productId._id %>" method="POST" style="display: inline;">
+                        <button type="submit" class="btn_1" style="background-color: #5cb85c; color: white; border: none; padding: 5px 10px; font-size: 14px;">
+                          Add to Cart
+                        </button>
+                      </form>
+                      <form action="/removeWishlist/<%= item._id %>" method="GET" style="display: inline;">
+                        <button type="submit" class="btn_1" style="background-color: #B08EAD; color: white; border: none; padding: 5px 10px; font-size: 14px;">
+                          Remove
+                        </button>
+                      </form>                  
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>              
+            </table>
+  
+              
+          <% } else { %>
+            <div class="no-cart-message text-center">
+              <h3>No items in your wishlist. Please add products to your wishlist.</h3>
+              <br>
+            </div>
+          <% } %>
+          
+          <br>
+          <!-- Buttons below the totals -->
+          <div class="checkout_btn_inner" style="text-align: center;">
+            <a class="btn_1" href="/showProducts">Continue Shopping</a>
+            <a class="btn_1 checkout_btn_1" href="/cart">Go To Cart</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<!--================End Cart Area =================-->
+
+<%- include("../partials/user/footer") %>
+
+
+    <!-- jquery plugins here-->
+    <script src="js/jquery-1.12.1.min.js"></script>
+    <!-- popper js -->
+    <script src="js/popper.min.js"></script>
+    <!-- bootstrap js -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- easing js -->
+    <script src="js/jquery.magnific-popup.js"></script>
+    <!-- swiper js -->
+    <script src="js/swiper.min.js"></script>
+    <!-- swiper js -->
+    <script src="js/mixitup.min.js"></script>
+    <!-- particles js -->
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.nice-select.min.js"></script>
+    <!-- slick js -->
+    <script src="js/slick.min.js"></script>
+    <script src="js/jquery.counterup.min.js"></script>
+    <script src="js/waypoints.min.js"></script>
+    <script src="js/contact.js"></script>
+    <script src="js/jquery.ajaxchimp.min.js"></script>
+    <script src="js/jquery.form.js"></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script src="js/mail-script.js"></script>
+    <!-- custom js -->
+    <script src="js/custom.js"></script>
+</body>
+
+</html>

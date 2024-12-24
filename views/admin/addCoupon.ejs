@@ -1,0 +1,205 @@
+<%- include('../partials/admin/header.ejs') %>
+
+<div class="container mt-4">
+    <h1 class="mb-3">Add New Coupon</h1>
+    <% if (locals.message) { %>
+    <div class="container alert bg-danger text-white text-center" style="max-width: 600px;"><%= locals.message %></div>
+    <% } %>
+    <form id="addCouponForm" action="/admin/addCoupon" method="POST" onsubmit="return formValidation()">
+        <div class="container" style="max-width: 600px;">
+            <div class="row">
+                <!-- Coupon Code Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="couponCode">Coupon Code</label>
+                        <input type="text" class="form-control" id="couponCode" name="couponCode"  >
+                        <div id="couponCodeError" class="error-message"></div>
+                    </div>
+                </div>
+    
+                <!-- Discount Value Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="discountValue">Discount Value</label>
+                        <input type="number" class="form-control" id="discountValue" name="discountValue"  >
+                        <div id="discountValueError" class="error-message"></div>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="row">
+                <!-- Discount Type Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="discountType">Discount Type</label>
+                        <select class="form-control" id="discountType" name="discountType"  >
+                            <option value="percentage">Percentage</option>
+                            <option value="fixed">Fixed</option>
+                        </select>
+                        <div id="discountTypeError" class="error-message"></div>
+                    </div>
+                </div>
+    
+                <!-- Minimum Price Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="minimumPrice">Minimum Total</label>
+                        <input type="number" class="form-control" id="minimumPrice" name="minimumPrice"  >
+                        <div id="minimumPriceError" class="error-message"></div>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="row">
+                <!-- Expiration Date Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="expiryDate">Expiry Date</label>
+                        <input type="date" class="form-control" id="expiryDate" name="expiryDate"  >
+                        <div id="expiryDateError" class="error-message"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="isActive">Is Active</label>
+                        <select class="form-control" id="isActive" name="isActice"  >
+                            <option value="true">true</option>
+                            <option value="false">false</option>
+                        </select>
+                        <div id="isActiveError" class="error-message"></div>
+                    </div>
+                </div>
+        
+            </div>
+            
+            <!-- Submit and Cancel Buttons -->
+            <div class="row">
+                <div class="col-md-12 text-right mt-3">
+                    <button type="submit" class="btn btn-primary">Add Coupon</button>
+                    <a href="/admin/coupons" class="btn btn-secondary ml-2">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<%- include('../partials/admin/footer.ejs') %>
+
+<style>
+    .error-message {
+        color: red;
+        font-size: 0.875rem;
+    }
+</style>
+
+<script>
+    const addCouponForm = document.getElementById("addCouponForm");
+    const couponCode = document.getElementById("couponCode");
+    const discountValue = document.getElementById("discountValue");
+    const discountType = document.getElementById("discountType");
+    const minimumPrice = document.getElementById("minimumPrice");
+    const expiryDate = document.getElementById("expiryDate");
+    const couponCodeError = document.getElementById("couponCodeError");
+    const discountValueError = document.getElementById("discountValueError");
+    const discountTypeError = document.getElementById("discountTypeError");
+    const minimumPriceError = document.getElementById("minimumPriceError");
+    const expiryDateError = document.getElementById("expiryDateError");
+
+    // Coupon Code validation
+    function couponCodeValidation() {
+        const codeVal = couponCode.value.trim();
+        if (codeVal === "") {
+            couponCodeError.style.display = "block";
+            couponCodeError.innerHTML = "Please enter a Coupon Code";
+        } else if (codeVal.length !== 14) {
+            couponCodeError.style.display = "block";
+            couponCodeError.innerHTML = "Coupon Code must be exactly 14 characters long";
+        } else {
+            couponCodeError.style.display = "none";
+            couponCodeError.innerHTML = "";
+        }
+    }
+
+    // Discount Value validation
+    function discountValueValidation() {
+        const discountVal = discountValue.value.trim();
+        const discountTypeVal = discountType.value;
+        const minPriceVal = minimumPrice.value.trim();
+        
+        if (discountVal === "" || discountVal <= 0) {
+            discountValueError.style.display = "block";
+            discountValueError.innerHTML = "Please enter a valid Discount Value";
+        } else if (discountTypeVal === "percentage" && discountVal > 100) {
+            discountValueError.style.display = "block";
+            discountValueError.innerHTML = "Discount Value cannot exceed 100% for Percentage Discount";
+        } else if (discountTypeVal === "fixed" && discountVal > minPriceVal) {
+            discountValueError.style.display = "block";
+            discountValueError.innerHTML = "Discount Value cannot exceed Minimum Price for Fixed Discount";
+        } else {
+            discountValueError.style.display = "none";
+            discountValueError.innerHTML = "";
+        }
+    }
+
+    // Discount Type validation
+    function discountTypeValidation() {
+        if (!discountType.value) {
+            discountTypeError.style.display = "block";
+            discountTypeError.innerHTML = "Please select a Discount Type";
+        } else {
+            discountTypeError.style.display = "none";
+            discountTypeError.innerHTML = "";
+        }
+    }
+
+    // Minimum Price validation
+    function minimumPriceValidation() {
+        const minPriceVal = minimumPrice.value.trim();
+        if (minPriceVal === "" || minPriceVal <= 0) {
+            minimumPriceError.style.display = "block";
+            minimumPriceError.innerHTML = "Please enter a valid Minimum Price";
+        } else {
+            minimumPriceError.style.display = "none";
+            minimumPriceError.innerHTML = "";
+        }
+    }
+
+    // Expiry Date validation
+    function expiryDateValidation() {
+        const expiryVal = expiryDate.value.trim();
+        const today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+        
+        if (expiryVal === "") {
+            expiryDateError.style.display = "block";
+            expiryDateError.innerHTML = "Please select an Expiration Date";
+        } else if (expiryVal < today) {
+            expiryDateError.style.display = "block";
+            expiryDateError.innerHTML = "Expiration Date cannot be in the past";
+        } else {
+            expiryDateError.style.display = "none";
+            expiryDateError.innerHTML = "";
+        }
+    }
+
+    // Form Validation
+    function formValidation() {
+        couponCodeValidation();
+        discountValueValidation();
+        discountTypeValidation();
+        minimumPriceValidation();
+        expiryDateValidation();
+
+        // Check if there are any validation errors
+        const hasErrors = couponCodeError.innerHTML || discountValueError.innerHTML || discountTypeError.innerHTML || minimumPriceError.innerHTML || expiryDateError.innerHTML;
+
+        // Return false to prevent form submission if there are errors, true otherwise
+        return !hasErrors;
+    }
+
+    // Attach validation functions to form input events
+    couponCode.addEventListener("blur", couponCodeValidation);
+    discountValue.addEventListener("blur", discountValueValidation);
+    discountType.addEventListener("change", discountTypeValidation);
+    minimumPrice.addEventListener("blur", minimumPriceValidation);
+    expiryDate.addEventListener("blur", expiryDateValidation);
+</script>

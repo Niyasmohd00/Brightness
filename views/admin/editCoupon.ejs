@@ -1,0 +1,172 @@
+<%- include('../partials/admin/header.ejs') %>
+
+<div class="container mt-4">
+    <h1 class="mb-3">Edit Coupon</h1>
+    <% if (locals.message) { %>
+    <div class="container alert bg-danger text-white text-center" style="max-width: 600px;"><%= locals.message %></div>
+    <% } %>
+    <form id="editCouponForm" action="/admin/editCoupon/<%= coupon._id %>" method="POST" onsubmit="return formValidation()">
+        <div class="container" style="max-width: 600px;">
+            <div class="row">
+                <!-- Coupon Code Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="couponCode">Coupon Code</label>
+                        <input type="text" class="form-control" id="couponCode" name="couponCode" value="<%= coupon.couponCode %>" >
+                        <div id="couponCodeError" class="error-message"></div>
+                    </div>
+                </div>
+
+                <!-- Discount Value Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="discountValue">Discount Value</label>
+                        <input type="number" class="form-control" id="discountValue" name="discountValue" value="<%= coupon.discountValue %>" >
+                        <div id="discountValueError" class="error-message"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Discount Type Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="discountType">Discount Type</label>
+                        <select class="form-control" id="discountType" name="discountType">
+                            <option value="percentage" <%= coupon.discountType === 'percentage' ? 'selected' : '' %>>Percentage</option>
+                            <option value="fixed" <%= coupon.discountType === 'fixed' ? 'selected' : '' %>>Fixed</option>
+                        </select>
+                        <div id="discountTypeError" class="error-message"></div>
+                    </div>
+                </div>
+
+                <!-- Minimum Price Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="minimumPrice">Minimum Total</label>
+                        <input type="number" class="form-control" id="minimumPrice" name="minimumPrice" value="<%= coupon.minimumPrice %>" >
+                        <div id="minimumPriceError" class="error-message"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Expiration Date Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="expiryDate">Expiry Date</label>
+                        <input type="date" class="form-control" id="expiryDate" name="expiryDate" value="<%= coupon.expiryDate.toISOString().slice(0, 10) %>" >
+                        <div id="expiryDateError" class="error-message"></div>
+                    </div>
+                </div>
+                
+                <!-- Is Active Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="isActive">Is Active</label>
+                        <select class="form-control" id="isActive" name="isActive">
+                            <option value="true" <%= coupon.isActive ? 'selected' : '' %>>Active</option>
+                            <option value="false" <%= !coupon.isActive ? 'selected' : '' %>>Inactive</option>
+                        </select>
+                        <div id="isActiveError" class="error-message"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit and Cancel Buttons -->
+            <div class="row">
+                <div class="col-md-12 text-right mt-3">
+                    <button type="submit" class="btn btn-primary">Update Coupon</button>
+                    <a href="/admin/coupons" class="btn btn-secondary ml-2">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<%- include('../partials/admin/footer.ejs') %>
+
+<style>
+    .error-message {
+        color: red;
+        font-size: 0.875rem;
+    }
+</style>
+
+<script>
+    const editCouponForm = document.getElementById("editCouponForm");
+    const couponCode = document.getElementById("couponCode");
+    const discountValue = document.getElementById("discountValue");
+    const discountType = document.getElementById("discountType");
+    const minimumPrice = document.getElementById("minimumPrice");
+    const expiryDate = document.getElementById("expiryDate");
+    const couponCodeError = document.getElementById("couponCodeError");
+    const discountValueError = document.getElementById("discountValueError");
+    const discountTypeError = document.getElementById("discountTypeError");
+    const minimumPriceError = document.getElementById("minimumPriceError");
+    const expiryDateError = document.getElementById("expiryDateError");
+
+    // Validation functions (reuse the existing logic)
+    function couponCodeValidation() {
+        const codeVal = couponCode.value.trim();
+        if (codeVal === "") {
+            couponCodeError.innerHTML = "Please enter a Coupon Code";
+        } else if (codeVal.length !== 14) {
+            couponCodeError.innerHTML = "Coupon Code must be exactly 14 characters long";
+        } else {
+            couponCodeError.innerHTML = "";
+        }
+    }
+
+    function discountValueValidation() {
+        const discountVal = discountValue.value.trim();
+        if (discountVal === "" || discountVal <= 0) {
+            discountValueError.innerHTML = "Please enter a valid Discount Value";
+        } else {
+            discountValueError.innerHTML = "";
+        }
+    }
+
+    function discountTypeValidation() {
+        if (!discountType.value) {
+            discountTypeError.innerHTML = "Please select a Discount Type";
+        } else {
+            discountTypeError.innerHTML = "";
+        }
+    }
+
+    function minimumPriceValidation() {
+        const minPriceVal = minimumPrice.value.trim();
+        if (minPriceVal === "" || minPriceVal <= 0) {
+            minimumPriceError.innerHTML = "Please enter a valid Minimum Price";
+        } else {
+            minimumPriceError.innerHTML = "";
+        }
+    }
+
+    function expiryDateValidation() {
+        const expiryVal = expiryDate.value.trim();
+        if (expiryVal === "") {
+            expiryDateError.innerHTML = "Please select an Expiration Date";
+        } else {
+            expiryDateError.innerHTML = "";
+        }
+    }
+
+    function formValidation() {
+        couponCodeValidation();
+        discountValueValidation();
+        discountTypeValidation();
+        minimumPriceValidation();
+        expiryDateValidation();
+
+        return !(couponCodeError.innerHTML || discountValueError.innerHTML || discountTypeError.innerHTML || minimumPriceError.innerHTML || expiryDateError.innerHTML);
+    }
+
+    // Attach validation functions to form input events
+    couponCode.addEventListener("blur", couponCodeValidation);
+    discountValue.addEventListener("blur", discountValueValidation);
+    discountType.addEventListener("change", discountTypeValidation);
+    minimumPrice.addEventListener("blur", minimumPriceValidation);
+    expiryDate.addEventListener("blur", expiryDateValidation);
+</script>

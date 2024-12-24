@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="zxx">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>pillloMart</title>
+    <link rel="icon" href="img/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- Other CSS Files -->
+    <link rel="stylesheet" href="css/animate.css">
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/all.css">
+    <link rel="stylesheet" href="css/flaticon.css">
+    <link rel="stylesheet" href="css/themify-icons.css">
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/nice-select.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<style>
+    .btn-container a {
+    text-decoration: none;
+}
+
+    body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        font-family: Arial, sans-serif;
+    }
+
+    .order-details-container {
+        width: 90%;
+        max-width: 1200px;
+        margin: auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+        width: 93%;
+        border-collapse: collapse;
+        margin: 40px 40px;
+        background-color: #fff;
+    }
+
+    table th, table td {
+        padding: 15px;
+        text-align: left;
+        border: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    table th {
+        background-color: #f4f4f4;
+        font-weight: bold;
+        color: #333;
+        text-transform: uppercase;
+    }
+
+    table tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    .product-image {
+        max-width: 100px;
+        height: auto;
+    }
+
+    .order-actions {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    button {
+        padding: 10px 15px;
+        font-size: 14px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    .cart_area .product_count {
+        display: inline-block;
+        position: relative;
+        margin-bottom: 24px;
+        overflow: hidden;
+    }
+
+    .order-summary {
+        text-align: center;
+        margin-top: 40px;
+    }
+
+    .order-summary div {
+        margin: 10px 0;
+        font-size: 16px;
+    }
+
+    .order-summary .total {
+        font-size: 22px;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .order-summary .btn-cancel {
+        margin-top: 20px;
+        background-color: #f44336;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .order-summary .btn-cancel:hover {
+        background-color: #d32f2f;
+    }
+
+    .order-summary .btn-back, .order-summary .btn-buy-again {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        border: none;
+    }
+
+    .order-summary .btn-back:hover, .order-summary .btn-buy-again:hover {
+        background-color: #0056b3;
+    }
+
+    .order-summary .btn-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .order-summary .order-status {
+        font-weight: bold;
+    }
+
+</style>
+
+<body>
+    <section class="cart_area section_padding">
+        <div class="container" style="overflow-x: hidden;">
+            <div class="container">
+                <h3>
+                    <br>
+                    <a href="/" style="text-decoration: none; color: blue; padding-left: 40px;">Home</a> / 
+                    <a href="/order" style="text-decoration: none;">Orders</a> / 
+                    Order Details
+                </h3>
+            </div>
+            <div class="cart_inner">
+                <h1 style="text-align: center; font-size: 40px; color: #B08EAD;">Order Details</h1>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Offer</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center;">
+                                        <a href="/eachProduct?id=<%= product.productId._id %>" style="margin-right: 15px;">
+                                            <img src="/uploads/re-image/<%= product.productId.productImages[0] %>" 
+                                                 alt="<%= product.productId.productName %>" 
+                                                 style="width: 100px; height: 100px; object-fit: cover; border-radius: 5px;" />
+                                        </a>
+                                        <span style="font-size: 16px; font-weight: 500;"><%= product.productId.productName %></span>
+                                    </div>
+                                </td>
+                                <td>₹<%= product.productId.price %></td>
+                                <td><%= product.quantity %></td>
+                                <td><%= product.offerAmount %></td>
+                                <td>₹<%= product.productId.price * product.quantity-product.offerAmount.toFixed(2) %></td>
+                            </tr>
+                        </tbody>                        
+                    </table>
+                </div>
+
+                <!-- Total Amount -->
+                <div class="order-summary">
+                    <div class="total" style="color: #B08EAD;">
+                        Total Amount: ₹<%= product.productId.price * product.quantity %>
+                    </div>
+                    <br>
+                    <!-- Tracking ID & Date -->
+                    <div>
+                        Tracking ID: <%= product.trackingNumber %> | 
+                        Date: <%= order.orderDate.toLocaleDateString() %> 
+                    </div>
+
+                    <!-- Payment Method & Status -->
+                    <div>
+                        Payment Method: <%= order.paymentMethod %> | Payment Status: <%= order.paymentStatus %>
+                    </div>
+
+                    <!-- Delivery Address -->
+                    <div>
+                        Delivery Address: <%= order.addressId.fname %> <%= order.addressId.lname %>, Pin Code <%= order.addressId.pincode %>
+                    </div>
+                    <div>
+                        Delivery Expected On: 
+                        <script>
+                            var orderDate = new Date("<%= order.orderDate %>");
+                            orderDate.setDate(orderDate.getDate() + 7); // Add 7 days to the order date
+                            var day = ("0" + orderDate.getDate()).slice(-2);
+                            var month = ("0" + (orderDate.getMonth() + 1)).slice(-2); // Months are 0-indexed
+                            var year = orderDate.getFullYear();
+                            var formattedDate = day + '/' + month + '/' + year;
+                            document.write(formattedDate);
+                        </script>
+                    </div>
+                    <br>
+                    <!-- Order Status -->
+                    <div class="order-status">
+                        Order Status: <%= product.status %>
+                    </div>
+
+                    <!-- Cancel Order Button -->
+                    <% if (product.status === 'Processing' || product.status === 'Shipped') { %>
+                        <div class=" btn-container" style="text-align: center; margin-top: 20px;">
+                            <form id="cancel-form-<%= order._id %>" action="/cancelItem/<%= order._id %>/<%= product.trackingNumber %>" method="POST">
+                                <button 
+                                    type="button" 
+                                    class="cancel-order-btn" 
+                                    data-form-id="cancel-form-<%= order._id %>" 
+                                    onclick="confirmCancel('<%= order._id %>')" 
+                                    style="background-color: #B08EAD; color: white; border: none; padding: 5px 10px; font-size: 20px; height: 50px; width: 170px;" >Cancel Order
+                                </button>
+                            </form>
+                        </div>
+                    <% } %>
+                    <% if (product.status == 'Delivered' & product.return.returnStatus=='') { %>
+                        <!-- Card or Box to contain the form -->
+                        <div style="border: 1px solid #ccc; padding: 20px; border-radius: 8px; background-color: #f9f9f9; max-width: 400px; margin-top: 20px; 
+                                    display: flex; flex-direction: column; justify-content: center; align-items: center; margin-left: auto; margin-right: auto;">
+                            
+                            <!-- Return Reason and Quantity Inputs -->
+                            <form action="/returnOrder/<%= order._id %>/<%= product.trackingNumber %>" method="POST" id="returnForm">
+                                <div style="margin-bottom: 10px; width: 100%;">
+                                    <label for="returnReason">Return Reason:</label>
+                                    <textarea id="returnReason" name="returnReason" required style="width: 100%; padding: 5px; font-size: 16px; height: 100px;"></textarea>
+                                </div>
+                                
+                                <div style="margin-bottom: 10px; width: 100%;">
+                                    <label for="returnQuantity">Return Quantity:</label>
+                                    <!-- Quantity as a Select Dropdown -->
+                                    <select id="returnQuantity" name="returnQuantity" required style="width: 25%; padding: 5px; font-size: 16px;">
+                                        <% for (let i = 1; i <= product.quantity; i++) { %>
+                                            <option value="<%= i %>"><%= i %></option>
+                                        <% } %>
+                                    </select>
+                                </div>
+                            
+                                <!-- Return Order Button -->
+                                <button type="button" class="btn-cancel" id="returnButton"
+                                        style="background-color: #B08EAD; color: white; border: none; padding: 5px 10px; font-size: 20px; height: 50px; width: 170px; margin-top: 10px;">
+                                    Return Order
+                                </button>
+                            </form>
+                        </div>
+                    <% } %>
+                    <% if (product.return.returnStatus!=='') { %>
+                        <div class="order-status">
+                            Return Status: <%= product.return.returnStatus %>
+                        </div>
+                    <% } %>
+                    <% if (product.return.returnStatus==='Approved') { %>
+                        <div class="order-status">
+                            Pickup Date:
+                            <script>
+                                var orderDate = new Date("<%= order.orderDate %>");
+                                orderDate.setDate(orderDate.getDate() + 3); // Add 7 days to the order date
+                                var day = ("0" + orderDate.getDate()).slice(-2);
+                                var month = ("0" + (orderDate.getMonth() + 1)).slice(-2); // Months are 0-indexed
+                                var year = orderDate.getFullYear();
+                                var formattedDate = day + '/' + month + '/' + year;
+                                document.write(formattedDate);
+                            </script>
+                        </div>
+                    <% } %>
+                    
+                    
+                    <!-- Buttons to Go Back or Buy Again -->
+                    <div class="btn-container">
+                        <a href="/order" class="btn-back"">Back to Orders</a>
+                        <a href="/showProducts" class="btn-buy-again">Buy Again</a>
+                    </div>
+                    <br>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmCancel(orderId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you really want to cancel this order?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, cancel it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`cancel-form-${orderId}`).submit();
+            }
+        });
+    }
+    document.getElementById('returnButton').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the form from submitting immediately
+        
+        // Show SweetAlert confirmation
+        Swal.fire({
+            title: 'Are you sure you want to return this order?',
+            text: 'Once confirmed, you cannot change your decision.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#B08EAD',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, return it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If confirmed, submit the form
+                document.getElementById('returnForm').submit();
+            }
+        });
+    });
+    
+</script>
+<!-- jQuery -->
+<script src="js/jquery-1.12.1.min.js"></script>
+<!-- Popper.js -->
+<script src="js/popper.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="js/bootstrap.min.js"></script>
+
+<!-- Other JS Files -->
+<script src="js/jquery.magnific-popup.js"></script>
+<script src="js/swiper.min.js"></script>
+<script src="js/mixitup.min.js"></script>
+<script src="js/owl.carousel.min.js"></script>
+<script src="js/jquery.nice-select.min.js"></script>
+<script src="js/slick.min.js"></script>
+<script src="js/jquery.counterup.min.js"></script>
+<script src="js/waypoints.min.js"></script>
+<script src="js/contact.js"></script>
+<script src="js/jquery.ajaxchimp.min.js"></script>
+<script src="js/jquery.form.js"></script>
+<script src="js/jquery.validate.min.js"></script>
+<script src="js/mail-script.js"></script>
+<script src="js/custom.js"></script>
+
+</html>

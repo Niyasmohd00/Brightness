@@ -1,0 +1,121 @@
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+<%- include('../partials/admin/header.ejs') %>
+
+<div class="container mt-4">
+    <h1 class="mb-3">Orders</h1>
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th class="col-md-2">Track ID</th>
+                <th class="col-md-2">Customer</th>
+                <th class="col-md-2">Date</th>
+                <th class="col-md-2">Total Amount</th>
+                <th class="col-md-2">Status</th>
+                <th class="col-md-1">More</th>
+            </tr>
+        </thead>
+        <tbody id="orderTableBody">
+            <% orders.forEach(order => { %>
+                <% order.products.forEach(product => { %>
+                <tr data-id="<%= order._id %>">
+                    <td><%= product.trackingNumber %></td>
+                    <td><%= order.userId.name %></td> <!-- Customer's name -->
+                    <td><%= new Date(order.orderDate).toLocaleDateString() %></td> <!-- Order Date -->
+                    <td>₹<%= order.totalAmount.toFixed(2) %></td> <!-- Total amount -->
+                    <td>
+                        <button class="btn 
+                            <%= product.status === 'Processing' ? 'btn-warning' : '' %>
+                            <%= product.status === 'Shipped' ? 'btn-primary' : '' %>
+                            <%= product.status === 'Delivered' ? 'btn-success' : '' %>"
+                            onclick="changeStatus('<%= order._id %>', '<%= product.status %>', '<%= product.trackingNumber %>')">
+                            <%= product.status %>
+                        </button>
+                        <% if (product.return.returnStatus === 'Requested') { %>
+                            <!-- Red Round Icon without "X" -->
+                            <span style="display: inline-block; width: 15px; height: 15px; border-radius: 50%; background-color: red; color: white; text-align: center; line-height: 15px;">
+                                <!-- Empty for just the red circle -->
+                            </span>
+                        <% } %>
+                        
+                        
+
+                    </td>
+                    <td>
+                        <a href="orderView/<%= order._id %>/<%= product.trackingNumber %>" class="text-dark mr-2">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                    </td>
+                </tr>
+            <% }) %>
+            <% }); %>
+        </tbody>
+    </table>
+
+    <!-- Pagination Controls -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= (i === currentPage) ? 'active' : '' %>">
+                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                </li>
+            <% } %>
+        </ul>
+    </nav>
+</div>
+
+<%- include('../partials/admin/footer.ejs') %>
+
+<script>
+    function changeStatus(orderId, currentStatus, trackingNumber) {
+     // Determine the next status and button color
+     let nextStatus, buttonClass, alertMessage;
+     if (currentStatus === 'Processing') {
+         nextStatus = 'Shipped';
+         buttonClass = 'btn-primary'; // Blue color for Shipped
+         alertMessage = 'Order has been shipped successfully!';
+     } else if (currentStatus === 'Shipped') {
+         nextStatus = 'Delivered';
+         buttonClass = 'btn-success'; // Green color for Delivered
+         alertMessage = 'Order has been delivered successfully!';
+     } else {
+         return; // Do nothing if already Delivered
+     }
+ 
+     // Send a request to update the order status and tracking number in the database
+     fetch(`/admin/updateOrderStatus/${orderId}`, {
+         method: 'PATCH',
+         headers: {
+             'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({ status: nextStatus, trackingNumber: trackingNumber })
+     })
+     .then(response => {
+         if (!response.ok) {
+             // If the response status is not ok, throw an error
+             return response.json().then(errorData => { throw new Error(errorData.message || 'Failed to update status'); });
+         }
+         return response.json();
+     })
+     .then(data => {
+         if (data.success) {
+             // Update the button text and class based on the new status
+             const button = document.querySelector(`tr[data-id="${orderId}"] button`);
+             button.textContent = nextStatus;
+             button.classList.remove('btn-warning', 'btn-primary', 'btn-success');
+             button.classList.add(buttonClass);
+ 
+             // Show success alert and refresh the page
+             alert(alertMessage);
+             location.reload(); // Refresh the page after alert
+         } else {
+             alert('Failed to update order status. Please try again.');
+         }
+     })
+     .catch(error => {
+         // Log and show the error message
+         console.error('Error:', error);
+         alert(`An error occurred: ${error.message}. Please try again.`);
+     });
+ }
+ </script>

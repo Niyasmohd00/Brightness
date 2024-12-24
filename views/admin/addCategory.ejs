@@ -1,0 +1,138 @@
+<%- include('../partials/admin/header.ejs') %>
+
+<div class="container mt-4">
+    <h1 class="mb-3">Add New Category</h1>
+    <% if (locals.message) { %>
+    <div class="container alert bg-danger text-white text-center" style="max-width: 600px;"><%= locals.message %></div>
+    <% } %>
+    <form id="addCategoryForm" action="/admin/addCategory" method="POST" onsubmit="return formValidation()">
+        <div class="container" style="max-width: 600px;">
+            <div class="row">
+                <!-- Category Name Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="name">Category Name</label>
+                        <input type="text" class="form-control" id="name" name="name">
+                        <div id="nameError" class="error-message"></div>
+                    </div>
+                </div>
+    
+                <!-- Offer Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="categoryOffer">Offer (%)</label>
+                        <input type="number" class="form-control" id="categoryOffer" name="categoryOffer">
+                        <div id="offerError" class="error-message"></div>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="row">
+                <!-- Description Field -->
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        <div id="descriptionError" class="error-message"></div>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="row">
+                <!-- Status Field -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select class="form-control" id="status" name="isActive">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Submit and Cancel Buttons -->
+            <div class="row">
+                <div class="col-md-12 text-right mt-3">
+                    <button type="submit" class="btn btn-primary">Add Category</button>
+                    <a href="/admin/category" class="btn btn-secondary ml-2">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </form>
+    
+    
+</div>
+
+<%- include('../partials/admin/footer.ejs') %>
+<style>
+    .error-message {
+      color: red;
+      font-size: 0.875rem;
+    }
+</style>
+<script>
+    const addCategoryForm = document.getElementById("addCategoryForm");
+    const cName = document.getElementById("name");
+    const cOffer = document.getElementById("categoryOffer");
+    const cDescription = document.getElementById("description");
+    const nameError = document.getElementById("nameError");
+    const offerError = document.getElementById("offerError");
+    const descriptionError = document.getElementById("descriptionError");
+
+    //category name validation
+    function categoryNameValidation(e) {
+     const nameval = cName.value
+     
+     if (nameval.trim() === "") {
+       nameError.style.display = "block";
+       nameError.innerHTML = "Please enter Category Name";
+     } else {
+       nameError.style.display = "none";
+       nameError.innerHTML="";
+     }
+   }
+
+   //category offer validation
+   function categoryOfferValidation(e) {
+     const nameval = cOffer.value;
+
+     
+     if (nameval.trim() === "" || nameval.trim()<0 || nameval.trim()>100) {
+       offerError.style.display = "block";
+       offerError.innerHTML = "Please enter a valid Category Offer";
+     } else {
+       offerError.style.display = "none";
+       offerError.innerHTML="";
+     }
+   }
+
+   //category description validation
+   function categoryDescriptionValidation(e) {
+     const offerVal = cDescription.value;
+
+     
+     if (offerVal.trim() === "") {
+       descriptionError.style.display = "block";
+       descriptionError.innerHTML = "Please enter Category Description";
+     } else {
+       descriptionError.style.display = "none";
+       descriptionError.innerHTML="";
+     }
+   }
+
+// category Validation
+function formValidation() {
+  // Call all validation functions
+  categoryNameValidation();
+  categoryOfferValidation();
+  categoryDescriptionValidation();
+
+  // Check if there are any validation errors
+  const hasErrors = nameError.innerHTML || offerError.innerHTML || descriptionError.innerHTML;
+
+  // Return false to prevent form submission if there are errors, true otherwise
+  return !hasErrors;
+}
+
+</script>
