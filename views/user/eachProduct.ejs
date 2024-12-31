@@ -142,10 +142,18 @@ opacity: 1; /* Increase opacity when hovered */
                 </a>
                 
                 <!-- Add to Wishlist Button -->
-                <a href="/addToWishlist?productId=<%= product._id %>"
-                    class="btn btn-primary">
-                    Add to wishlist
-                </a>
+                <% if (isInWishlist) { %> 
+                    <!-- Button disabled when the product is already in the wishlist -->
+                    <button class="btn btn-primary" disabled>
+                        Added to Wishlist
+                    </button>
+                <% } else { %> 
+                    <!-- Normal button to add product to the wishlist -->
+                    <a href="/addToWishlist?productId=<%= product._id %>" class="btn btn-primary">
+                        Add to Wishlist
+                    </a>
+                <% } %>
+                                
                 <br>
                 <br>
                 <a href="/buyNow?productId=<%= product._id %>&quantity=1" 
@@ -172,7 +180,6 @@ opacity: 1; /* Increase opacity when hovered */
             <div class="col-12">
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="review-tab" data-bs-toggle="tab" data-bs-target="#review" type="button" role="tab" aria-controls="review" aria-selected="false">Reviews</button>
                     </li>
                 </ul>
             </div>

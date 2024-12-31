@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zxx">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Brightness - Referral</title>
+    <link rel="icon" href="img/favicon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <%- include("../partials/user/header") %>
+
+<!-- Breadcrumb -->
+<div class="container breadcrumb-container text-left">
+    <h3>
+        <a href="/" style="text-decoration: none;">Home</a> /
+        <a href="/account" style="text-decoration: none;">Account</a> /
+        Referral
+    </h3>
+</div>
+
+<!-- Referral Section -->
+<section class="referral_area section_padding text-center">
+    <div class="container">
+        <!-- Referral Heading and Offer Description -->
+        <div class="mb-4">
+            <h2 class="text-center mb-2">Referral Offer</h2>
+            <br>
+            <h3 class="text-center mb-2">Invite and Earn ₹400 Cashback</h2>
+            <p class="lead">Refer your friends and get ₹400 cashback reward for each referral.</p>
+        </div>
+
+        <!-- Share Your Code Section -->
+        <div class="card mb-4" style="max-width: 400px; margin: 0 auto;">
+            <div class="card-body">
+                <h5 class="card-title">Share Your Code</h5>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="referralCode" value="<%= user.referralCode %>" readonly>
+                    <button class="btn btn-outline-secondary" type="button" onclick="copyReferralLink()">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Apply Referral Code Section -->
+        <div class="card mb-4" style="max-width: 400px; margin: 0 auto;">
+            <div class="card-body">
+                <% if (user.referredBy!=='') { %>
+                    <p class="text-success">You have already earned your referral reward!</p>
+                    <% } else { %>
+                        <h5 class="card-title">Apply the Referral Code</h5>
+                        <form action="/applyReferral" method="POST" id="referralForm">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="applyReferralCode" name="referralCode" placeholder="Enter referral code">
+                                <div id="error-message" class="text-danger mt-2" style="display:none;"></div>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">Apply Code</button>
+                        </form>
+                    <% } %>                    
+            </div>
+            <% if (success_msg) { %>
+            <h5 class="text-center text-success mb-3"><%= success_msg %></h5>
+            <% } %>
+            <% if (error_msg) { %>
+            <h5 class="text-center text-danger mb-3"><%= error_msg %></h5>
+            <% } %>
+        </div>
+    </div>
+</section>
+
+<%- include("../partials/user/footer") %>
+
+<script>
+    // Function to copy the referral link
+    function copyReferralLink() {
+        var referralLink = document.getElementById("referralCode");
+        referralLink.select();
+        referralLink.setSelectionRange(0, 99999); // For mobile devices
+        document.execCommand("copy");
+        alert("Referral link copied: " + referralLink.value);
+    }
+
+</script>
+
+<script>
+    document.getElementById('referralForm').addEventListener('submit', function(event) {
+        const referralCodeInput = document.getElementById('applyReferralCode');
+        const errorMessageDiv = document.getElementById('error-message');
+
+        // Check if the referral code input is empty
+        if (!referralCodeInput.value.trim()) {
+            event.preventDefault();  // Prevent form submission
+
+            // Show the custom error message
+            errorMessageDiv.style.display = 'block';
+            errorMessageDiv.textContent = 'Referral code cannot be empty. Please enter a valid code.'; // Set error message text
+
+            // Add Bootstrap invalid class for input styling
+            referralCodeInput.classList.add('is-invalid');
+        } else {
+            // Hide the error message and remove invalid styling if the input is valid
+            errorMessageDiv.style.display = 'none';
+            referralCodeInput.classList.remove('is-invalid');
+        }
+    });
+</script>
+
+    <!-- jquery plugins -->
+    <script src="js/jquery-1.12.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/custom.js"></script>
+</body>
+
+</html>

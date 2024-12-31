@@ -17,37 +17,40 @@
         </thead>
         <tbody id="orderTableBody">
             <% orders.forEach(order => { %>
-                <% order.products.forEach(product => { %>
-                <tr data-id="<%= order._id %>">
-                    <td><%= product.trackingNumber %></td>
-                    <td><%= order.userId.name %></td> <!-- Customer's name -->
-                    <td><%= new Date(order.orderDate).toLocaleDateString() %></td> <!-- Order Date -->
-                    <td>₹<%= order.totalAmount.toFixed(2) %></td> <!-- Total amount -->
-                    <td>
-                        <button class="btn 
-                            <%= product.status === 'Processing' ? 'btn-warning' : '' %>
-                            <%= product.status === 'Shipped' ? 'btn-primary' : '' %>
-                            <%= product.status === 'Delivered' ? 'btn-success' : '' %>"
-                            onclick="changeStatus('<%= order._id %>', '<%= product.status %>', '<%= product.trackingNumber %>')">
-                            <%= product.status %>
-                        </button>
-                        <% if (product.return.returnStatus === 'Requested') { %>
-                            <!-- Red Round Icon without "X" -->
-                            <span style="display: inline-block; width: 15px; height: 15px; border-radius: 50%; background-color: red; color: white; text-align: center; line-height: 15px;">
-                                <!-- Empty for just the red circle -->
-                            </span>
-                        <% } %>
-                        
-                        
-
-                    </td>
-                    <td>
-                        <a href="orderView/<%= order._id %>/<%= product.trackingNumber %>" class="text-dark mr-2">
-                            <i class="fas fa-eye"></i>
-                        </a>
+                <!-- Add a new row for order details (orderId and orderDate) -->
+                <tr>
+                    <td colspan="6">
+                        <strong>Order ID:</strong> <%= order.orderId %> | <strong>Order Date:</strong> <%= new Date(order.orderDate).toLocaleDateString() %> | <strong>Coupon Applied:</strong> <%= order.couponDiscount %>
                     </td>
                 </tr>
-            <% }) %>
+                <% order.products.forEach(product => { %>
+                    <tr data-id="<%= order._id %>">
+                        <td><%= product.trackingNumber %></td>
+                        <td><%= order.userId.name %></td> <!-- Customer's name -->
+                        <td><%= new Date(order.orderDate).toLocaleDateString() %></td> <!-- Order Date -->
+                        <td>₹<%= order.totalAmount.toFixed(2) %></td> <!-- Total amount -->
+                        <td>
+                            <button class="btn 
+                                <%= product.status === 'Processing' ? 'btn-warning' : '' %>
+                                <%= product.status === 'Shipped' ? 'btn-primary' : '' %>
+                                <%= product.status === 'Delivered' ? 'btn-success' : '' %>"
+                                onclick="changeStatus('<%= order._id %>', '<%= product.status %>', '<%= product.trackingNumber %>')">
+                                <%= product.status %>
+                            </button>
+                            <% if (product.return.returnStatus === 'Requested') { %>
+                                <!-- Red Round Icon without "X" -->
+                                <span style="display: inline-block; width: 15px; height: 15px; border-radius: 50%; background-color: red; color: white; text-align: center; line-height: 15px;">
+                                    <!-- Empty for just the red circle -->
+                                </span>
+                            <% } %>
+                        </td>
+                        <td>
+                            <a href="orderView/<%= order._id %>/<%= product.trackingNumber %>" class="text-dark mr-2">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                <% }) %>
             <% }); %>
         </tbody>
     </table>

@@ -2,6 +2,7 @@ const passport = require('passport');
 const googleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/userSchema");
 const env = require("dotenv").config();
+const crypto = require('crypto');
 
 passport.use(new googleStrategy({
     clientID:process.env.GOOGLE_CLIENT_ID,
@@ -16,10 +17,12 @@ async (accessToken,refreshToken,profile,done)=>{
         if(user){
             return done(null,user);
         }else{
+            const referralCode = await generateUniqueReferralCode();
             user = new User({
                 name:profile.displayName,
                 email:profile.emails[0].value,
-                googleId:profile.id
+                googleId:profile.id,
+                referralCode: referralCode,
             })
             await user.save();
             return done(null,user)
@@ -50,5 +53,16 @@ passport.deserializeUser((id, done) => {
         });
 });
 
+async function generateUniqueReferralCode() {
+    let code;
+    let exists = true;
+
+    while (exists) {
+        code = crypto.randomBytes(4).toString('hex').toUpperCase();
+        exists = await User.exists({ referralCode: code });
+    }
+
+    return code;
+}
 
 module.exports = passport

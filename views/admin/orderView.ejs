@@ -39,6 +39,8 @@
                             <th></th>
                             <th>Quantity</th>
                             <th></th>
+                            <th>Offer</th>
+                            <th></th>
                             <th>Total</th>
                         </tr>
                     </thead>
@@ -56,7 +58,9 @@
                             <td></td>
                             <td><%= product.quantity %></td>
                             <td></td>
-                            <td>₹<%= product.productId.price * product.quantity %></td>
+                            <td>₹<%= product.offerAmount %></td>
+                            <td></td>
+                            <td>₹<%= product.productId.price * product.quantity-product.offerAmount.toFixed(2) %></td>
                         </tr>
                     </tbody>
                 </table>

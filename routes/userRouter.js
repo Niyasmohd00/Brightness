@@ -28,7 +28,6 @@ router.use((req, res, next) => {
 });
 
 
-
 router.get('/login',userController.loadLogin)
 router.post('/login',userController.login)
 router.get('/pageNotFound',userController.pageNotFound)
@@ -57,6 +56,10 @@ router.post('/verify-email-otp/resend', userAuth.userAuth, profileController.res
 router.get('/verify-password-otp', userAuth.userAuth, profileController.getVerifyPasswordOtpPage);
 router.post('/verify-password-otp', userAuth.userAuth, profileController.verifyPasswordOtp);
 router.post('/verify-password-otp/resend', userAuth.userAuth, profileController.resendPasswordOtp);
+
+//referral 
+router.get('/referral',userAuth.userAuth,profileController.getReferral)
+router.post('/applyReferral',userAuth.userAuth,profileController.applyReferralCode)
 
 //wallet
 router.get('/wallet',userAuth.userAuth,profileController.getWallet)
@@ -104,6 +107,7 @@ router.get('/viewOrder/:orderId/:trackingNumber', userAuth.userAuth, orderContro
 router.get('/cancelOrder/:orderId',userAuth.userAuth,orderController.cancelOrder);
 router.post('/cancelItem/:orderId/:trackingNumber',userAuth.userAuth,orderController.cancelItem);
 router.post('/returnOrder/:orderId/:trackingNumber',userAuth.userAuth,orderController.returnOrder);
+router.get("/invoice-pdf",userAuth.userAuth,orderController.invoicePDF);
 
 //coupon management
 router.get('/showCoupons',userAuth.userAuth,couponController.loadCoupon)

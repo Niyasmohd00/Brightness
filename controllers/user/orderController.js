@@ -2,16 +2,30 @@ const Product = require('../../models/productSchema')
 const Cart = require('../../models/cartSchema');
 const User = require('../../models/userSchema');
 const Address = require('../../models/addressSchema');
-const Order = require('../../models/orderSchema')
+const Order = require('../../models/orderSchema');
+const PDFDocument = require('pdfkit');
 
 const getOrders = async (req, res) => {
   try {
-    const userId = req.session.user.id; 
+    const userId = req.session.user.id;
     if (!userId) {
-      return res.redirect('/login'); 
+      return res.redirect('/login');
     }
 
+    // Get the current page from the query parameters or default to page 1
+    const currentPage = parseInt(req.query.page) || 1;
+    const ordersPerPage = 10; // Number of orders per page
+
+    // Calculate the total number of orders
+    const totalOrders = await Order.countDocuments({ userId });
+
+    // Calculate the total number of pages
+    const totalPages = Math.ceil(totalOrders / ordersPerPage);
+
+    // Fetch the orders for the current page
     const orders = await Order.find({ userId })
+      .skip((currentPage - 1) * ordersPerPage)  // Skip the appropriate number of orders
+      .limit(ordersPerPage)  // Limit to the number of orders per page
       .populate({
         path: 'products.productId',
         model: 'Product',
@@ -20,6 +34,7 @@ const getOrders = async (req, res) => {
       .sort({ createdAt: -1 })
       .exec();
 
+    // Add the cancelable flag to each order
     const ordersWithFlags = orders.map((order) => {
       const isCancelable = order.products.every(
         (product) => product.status === 'Processing' || product.status === 'Shipped' || product.status === 'Pending'
@@ -27,7 +42,12 @@ const getOrders = async (req, res) => {
       return { ...order.toObject(), isCancelable };
     });
 
-    res.render('order', { orders: ordersWithFlags });
+    // Pass the data to the view
+    res.render('order', { 
+      orders: ordersWithFlags, 
+      totalPages, 
+      currentPage 
+    });
   } catch (error) {
     console.error('Error fetching orders:', error);
     res.status(500).send('Internal server error');
@@ -177,11 +197,94 @@ const returnOrder = async (req, res) => {
 };
 
 
+const invoicePDF = async (req, res) => {
+  try {
+    const { orderId, trackingNumber } = req.query;
+    const user = await User.findById(req.session.user.id);
+    if (!orderId || !trackingNumber) {
+      return res.status(400).send('Order ID and Tracking Number are required.');
+    }
+
+    const order = await Order.findOne({
+      _id: orderId,
+    })
+      .populate('userId', 'name email address')
+      .populate('products.productId', 'productName price category')
+      .populate('products.productId.category', 'categoryName')
+      .populate('addressId');
+
+    if (!order) {
+      return res.status(404).send('Order not found.');
+    }
+
+    const product = order.products.find(p => p.trackingNumber === trackingNumber);
+
+    if (!product) {
+      return res.status(404).send('Product with the specified tracking number not found.');
+    }
+
+    // Create the PDF invoice for the specific product
+    const doc = new PDFDocument({
+      size: 'A4',
+      margin: 40,
+    });
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=Invoice_${user.name}_${trackingNumber}.pdf`);
+    doc.pipe(res);
+
+    doc.fontSize(30).font('Helvetica-Bold').text('BRIGHTNESS', { align: 'center' });
+    doc.fontSize(16).text('Different types of mirror to decorate your place', { align: 'center' });
+    doc.moveDown(2);
+    doc.fontSize(14).text('Invoice', { align: 'center' }); 
+    doc.moveDown(2);
+
+    doc.fontSize(12).text(`Customer Name: ${order.userId?.name}`);
+    doc.text(`Email: ${order.userId?.email}`);
+    doc.moveDown();
+
+    doc.text(`Order Date: ${new Date(order.orderDate).toLocaleDateString()}`);
+    doc.text(`Order ID: ${order.orderId}`);
+    doc.text(`Tracking Number: ${trackingNumber}`);
+    doc.moveDown();
+
+    doc.text(`Product: ${product.productId?.productName}`);
+    doc.text(`Category: ${product.productId?.category.categoryName}`);
+    doc.text(`Price: Rs ${product.productId?.price.toFixed(2)}`);
+    doc.text(`Quantity: ${product.quantity}`);
+    doc.text(`Total: Rs ${(product.productId?.price * product.quantity).toFixed(2)}`);
+    if (product.offerAmount) {
+      doc.text(`Discount: Rs ${product.offerAmount.toFixed(2)}`);
+    }
+    doc.moveDown();
+
+    doc.text(`Address: ${order.addressId?.housename}, ${order.addressId?.city}, ${order.addressId?.state}, Pin:${order.addressId?.pincode}`);
+    doc.moveDown();
+
+    doc.text(`Payment Status: ${order.paymentStatus}`);
+    doc.text(`Payment Method: ${order.paymentMethod}`);
+    doc.moveDown();
+
+    doc.text('Warranty: 1 year warranty for Adaptor, Sensor and LED Strip', { italics: true });
+    doc.moveDown(2);
+
+    doc.fontSize(14).font('Helvetica-Bold').text(`Order Total: Rs ${order.totalAmount.toFixed(2)}`, { align: 'right' });
+    doc.moveDown(16);
+    doc.fontSize(14).text('Brightness', { align: 'center' });
+    doc.end();
+  } catch (error) {
+    console.error('Error generating invoice:', error);
+    res.status(500).send('Error generating invoice.');
+  }
+};
+
+
   module.exports = {
     getOrders,
     viewOrder,
     cancelOrder,
     cancelItem,
-    returnOrder
+    returnOrder,
+    invoicePDF
   };
   

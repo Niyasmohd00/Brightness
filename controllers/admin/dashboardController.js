@@ -10,26 +10,21 @@ const PDFDocument = require('pdfkit');
 
 const getDashboard = async (req, res) => {
     try {
-        // Get the current date to use as the default month and year
         const currentDate = new Date();
-        let month = req.query.month ? parseInt(req.query.month) : currentDate.getMonth() + 1; // Default to current month
-        let year = req.query.year ? parseInt(req.query.year) : currentDate.getFullYear(); // Default to current year
-        const chartType = req.query.chartType || 'monthly'; // Default to 'monthly'
+        let month = req.query.month ? parseInt(req.query.month) : currentDate.getMonth() + 1;
+        let year = req.query.year ? parseInt(req.query.year) : currentDate.getFullYear(); 
+        const chartType = req.query.chartType || 'monthly';
 
-        // Get the start and end dates based on chartType
         let startDate, endDate;
 
         if (chartType === 'monthly') {
-            // Monthly view: Get first and last day of the selected month
-            startDate = new Date(year, month - 1, 1); // First day of the month
-            endDate = new Date(year, month, 0); // Last day of the month
+            startDate = new Date(year, month - 1, 1); 
+            endDate = new Date(year, month, 0); 
         } else {
-            // Yearly view: Get first and last day of the selected year
-            startDate = new Date(year, 0, 1); // First day of the year
-            endDate = new Date(year + 1, 0, 0); // Last day of the year
+            startDate = new Date(year, 0, 1); 
+            endDate = new Date(year + 1, 0, 0);
         }
 
-        // Top Products
         const topProducts = await Order.aggregate([
             { $unwind: "$products" },
             { 
@@ -53,7 +48,6 @@ const getDashboard = async (req, res) => {
             { $limit: 10 },
         ]);
         
-        // Top Categories
         const topCategories = await Order.aggregate([
             { $unwind: "$products" },
             { 
@@ -86,7 +80,6 @@ const getDashboard = async (req, res) => {
             { $limit: 10 },
         ]);
 
-        // Fetching product status data
         const statusData = await Order.aggregate([
             { $unwind: "$products" },
             { 
@@ -100,7 +93,6 @@ const getDashboard = async (req, res) => {
             }
         ]);
 
-        // Mapping status data to the chart format
         const productStatus = {
             delivered: 0,
             returned: 0,
@@ -117,67 +109,10 @@ const getDashboard = async (req, res) => {
             if (item._id === 'Processing') productStatus.processing = item.count;
         });
 
-        const productSalesData = await Order.aggregate([
-            { $unwind: "$products" },
-            { 
-                $lookup: {
-                    from: "products",
-                    localField: "products.productId",
-                    foreignField: "_id",
-                    as: "productDetails",
-                }
-            },
-            { $unwind: "$productDetails" },
-            { $match: { createdAt: { $gte: startDate, $lte: endDate } } }, // Filter by date range
-            { 
-                $group: {
-                    _id: "$products.productId", // Group by product ID
-                    productName: { $first: "$productDetails.productName" }, // Retrieve product name
-                    totalSoldItems: { $sum: "$products.quantity" }, // Sum the quantities sold
-                }
-            },
-            { $sort: { totalSoldItems: -1 } } // Sort by total sold items
-        ]);
-
-        // Sales data for all Categories
-        const categorySalesData = await Order.aggregate([
-            { $unwind: "$products" },
-            { 
-                $lookup: {
-                    from: "products",
-                    localField: "products.productId",
-                    foreignField: "_id",
-                    as: "productDetails",
-                }
-            },
-            { $unwind: "$productDetails" },
-            { 
-                $lookup: {
-                    from: "categories",
-                    localField: "productDetails.category",
-                    foreignField: "_id",
-                    as: "categoryDetails",
-                }
-            },
-            { $unwind: "$categoryDetails" },
-            { $match: { createdAt: { $gte: startDate, $lte: endDate } } }, // Filter by date range
-            { 
-                $group: {
-                    _id: "$categoryDetails._id", // Group by category ID
-                    categoryName: { $first: "$categoryDetails.name" }, // Retrieve category name
-                    totalSoldItems: { $sum: "$products.quantity" }, // Sum the quantities sold
-                }
-            },
-            { $sort: { totalSoldItems: -1 } } // Sort by total sold items
-        ]);
-        console.log(productSalesData,categorySalesData)
-        // Pass the topProducts, topCategories, and productStatus to the view for rendering
         res.render("dashboard", {
             topProducts,
             topCategories,
             productStatus,
-            productSalesData,
-            categorySalesData,
             month,
             year,
             chartType

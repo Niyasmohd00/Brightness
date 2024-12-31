@@ -3,6 +3,8 @@ const Address = require('../../models/addressSchema');
 const User = require('../../models/userSchema');
 const bcrypt=require('bcryptjs')
 const nodemailer = require('nodemailer');
+
+
 const getAccount=async(req,res)=>{
     try {
         res.render('account')
@@ -436,7 +438,6 @@ const verifyPasswordOtp = async (req, res) => {
     try {
         const userId = req.session.user.id;
         
-        // Retrieve the email from the session's tempProfile
         const email = req.session.tempProfile?.email;
         
         if (!userId || !email) {
@@ -444,7 +445,7 @@ const verifyPasswordOtp = async (req, res) => {
         }
         
         const otp = generateOtp();
-        req.session.emailOtp = otp; // Update session with new OTP
+        req.session.emailOtp = otp;
         
         const emailSent = await sendVerificationEmail(email, otp);
         if (emailSent) {
@@ -475,6 +476,52 @@ const getWallet = async (req, res) => {
 };
 
 
+const getReferral = async(req,res)=>{
+    try {
+        const user = await User.findById(req.session.user.id);
+        res.render('referral',{user})
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+const applyReferralCode = async (req, res) => {
+    try {
+        const { referralCode } = req.body;
+        const user = await User.findById(req.session.user.id)
+        const referrer = await User.findOne({ referralCode,_id: { $ne: user._id }  });
+
+        if (!referrer) {
+            req.flash('error_msg', 'Invalid referral code. Please try again.');
+            return res.redirect('/referral');
+        }
+
+        if (user.referredBy) {
+            req.flash('error_msg', 'Referral code has already been applied.');
+            return res.redirect('/referral');
+        }
+        referrer.walletBalance += 400;
+        referrer.walletTransactions.push({
+            date: new Date(),
+            type: 'credit',
+            amount: 400,
+            transactionId: `TRNSID${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+            description: 'Referral reward ',
+        });
+        user.referredBy = referrer.name;
+        console.log(user.referredBy)
+        await referrer.save();
+        await user.save();
+
+        req.flash('success_msg', 'Referral code applied successfully!');
+        return res.redirect('/referral');
+    } catch (error) {
+        req.flash('error_msg', 'Something went wrong. Please try again.');
+        return res.redirect('/referral');
+    }
+};
+
+
 module.exports = {
     getAccount,
     getAddress,
@@ -492,5 +539,7 @@ module.exports = {
     getVerifyPasswordOtpPage,
     verifyPasswordOtp,
     resendPasswordOtp,
-    getWallet
+    getWallet,
+    getReferral,
+    applyReferralCode
 };

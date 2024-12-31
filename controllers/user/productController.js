@@ -1,5 +1,6 @@
 const Product = require("../../models/productSchema"); 
 const Category = require("../../models/categorySchema"); 
+const Wishlist = require('../../models/wishlistSchema');
 
 
 
@@ -72,24 +73,45 @@ function getSortOption(sort) {
   const loadSingleProduct = async (req, res) => {
     try {
         const productId = req.query.id; 
+        const userId = req.session.user ? req.session.user.id : null; // Get the user ID from session
+
+        // Fetch the product along with its category
         const product = await Product.findById(productId).populate('category');
 
         if (!product) {
             return res.status(404).render('404', { message: 'Product not found' }); 
         }
 
-        //increment view
+        // Increment view count
         product.views = (product.views || 0) + 1; 
         await product.save();
 
+        // Check if the product is in the user's wishlist
+        let isInWishlist = false;
+        if (userId) {
+            const wishlist = await Wishlist.findOne({ userId });
+            if (wishlist) {
+                isInWishlist = wishlist.items.some(item => item.productId.toString() === productId);
+            }
+        }
+
+        // Fetch other products (not the current product)
         const products = await Product.find({ isDeleted: false, _id: { $ne: productId } });
+
+        // Fetch related products based on category
         const relatedProducts = await Product.find({
             category: product.category,
             _id: { $ne: product._id },
             isDeleted: false
         }).limit(4);
 
-        res.render('eachProduct', { products, product, relatedProducts });
+        // Pass product, related products, and wishlist status to the view
+        res.render('eachProduct', { 
+            products, 
+            product, 
+            relatedProducts,
+            isInWishlist // This will be used to disable the button if the product is in wishlist
+        });
     } catch (error) {
         console.error("Error fetching product:", error);
         res.redirect("/pageerror"); 

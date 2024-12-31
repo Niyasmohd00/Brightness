@@ -5,7 +5,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>pillloMart</title>
+    <title>Brightness</title>
     <link rel="icon" href="img/favicon.png">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -242,7 +242,13 @@
                     <div class="order-status">
                         Order Status: <%= product.status %>
                     </div>
-
+                    <% if (product.status == 'Delivered'){ %>
+                        <a href="/invoice-pdf?orderId=<%= order._id %>&trackingNumber=<%= product.trackingNumber %>" 
+                            class="btn btn-danger btn-sm" 
+                            style="display: inline-block; padding: 8px 16px; font-size: 14px; font-weight: bold; text-align: center; text-decoration: none; background-color: #4f534f; color: white; border-radius: 4px;">
+                            Download Invoice
+                         </a>
+                    <%}%>
                     <!-- Cancel Order Button -->
                     <% if (product.status === 'Processing' || product.status === 'Shipped') { %>
                         <div class=" btn-container" style="text-align: center; margin-top: 20px;">
@@ -310,7 +316,7 @@
                     
                     <!-- Buttons to Go Back or Buy Again -->
                     <div class="btn-container">
-                        <a href="/order" class="btn-back"">Back to Orders</a>
+                        <a href="/order" class="btn-back">Back to Orders</a>
                         <a href="/showProducts" class="btn-buy-again">Buy Again</a>
                     </div>
                     <br>
