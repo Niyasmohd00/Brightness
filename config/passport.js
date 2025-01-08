@@ -4,11 +4,17 @@ const User = require("../models/userSchema");
 const env = require("dotenv").config();
 const crypto = require('crypto');
 
-passport.use(new googleStrategy({
-    clientID:process.env.GOOGLE_CLIENT_ID,
-    clientSecret:process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/google/callback"
+const getCallbackURL = () => {
+    const isProduction = process.env.NODE_ENV === 'production';
+    return isProduction
+        ? "https://brightness.co.in/auth/google/callback"
+        : "http://localhost:3000/auth/google/callback";
+};
 
+passport.use(new googleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: getCallbackURL(), 
 },
 
 async (accessToken,refreshToken,profile,done)=>{

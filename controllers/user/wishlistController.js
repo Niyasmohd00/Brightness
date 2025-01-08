@@ -115,7 +115,7 @@ const removeWishlist = async (req, res) => {
 const addToCart = async (req, res) => {
   try {
     const productId = req.params.id;
-    const userId = req.session.user.id; 
+    const userId = req.session.user.id;
 
     const wishlistItem = await Wishlist.findOne({ userId, "items.productId": productId });
     if (!wishlistItem) {
@@ -123,17 +123,32 @@ const addToCart = async (req, res) => {
       return res.redirect("/wishlist");
     }
 
+    const product = await Product.findById(productId);
+    if (!product) {
+      req.flash("error_msg", "Product not found.");
+      return res.redirect("/wishlist");
+    }
+
+    if (product.stock <= 0) {
+      req.flash('error_msg', 'Insufficient stock available.');
+      return res.redirect("/wishlist");
+    }
+
     const cart = await Cart.findOne({ userId });
     if (cart) {
       const productInCart = cart.items.find(item => item.productId.toString() === productId);
       if (productInCart) {
-        productInCart.quantity += 1; 
+        if (productInCart.quantity >= 5) {
+          req.flash('error_msg', 'Cannot have more than 5 units of the same product.');
+          return res.redirect("/wishlist");
+        }
+        
+        productInCart.quantity += 1;
       } else {
         cart.items.push({ productId, quantity: 1 });
       }
       await cart.save();
     } else {
-
       await Cart.create({ userId, items: [{ productId, quantity: 1 }] });
     }
 
@@ -144,12 +159,14 @@ const addToCart = async (req, res) => {
 
     req.flash("success_msg", "Product added to cart successfully.");
     res.redirect("/wishlist");
+
   } catch (error) {
     console.error("Error in addToCart:", error);
     req.flash("error_msg", "Something went wrong. Please try again.");
     res.redirect("/wishlist");
   }
 };
+
 
 
   module.exports = {

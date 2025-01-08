@@ -27,7 +27,7 @@
 
 <body>
     <%- include("../partials/user/header") %>
-    <div class="container">
+    <div class="container mt-3">
       <h3>
           <a href="/" style="text-decoration: none;">Home</a> / 
           <a href="/wishlist" style="text-decoration: none;">Wishlist</a>
@@ -81,7 +81,13 @@
                     <td></td>
                     <td></td>
                     <td class="text-left">
-                      <h5><del>₹<%= item.productId.mrp %></del> ₹<%= item.productId.price %></h5>
+                      <h5>
+                        <%if(item.productId.mrp==item.productId.price){%>
+                            ₹<%= item.productId.price %>
+                        <%}else{%>
+                            <del>₹<%= item.productId.mrp %></del> ₹<%= item.productId.price %>
+                        <%}%>
+                        </h5>
                     </td>
                     <td></td>
                     <td class="align-left">

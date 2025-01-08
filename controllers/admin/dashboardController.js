@@ -36,7 +36,7 @@ const getDashboard = async (req, res) => {
                 }
             },
             { $unwind: "$productDetails" },
-            { $match: { createdAt: { $gte: startDate, $lte: endDate } } }, // Filter by date range
+            { $match: { createdAt: { $gte: startDate, $lte: endDate } } }, 
             { 
                 $group: {
                     _id: "$products.productId", 
@@ -68,7 +68,7 @@ const getDashboard = async (req, res) => {
                 }
             },
             { $unwind: "$categoryDetails" },
-            { $match: { createdAt: { $gte: startDate, $lte: endDate } } }, // Filter by date range
+            { $match: { createdAt: { $gte: startDate, $lte: endDate } } }, 
             { 
                 $group: {
                     _id: "$categoryDetails._id",
@@ -83,11 +83,11 @@ const getDashboard = async (req, res) => {
         const statusData = await Order.aggregate([
             { $unwind: "$products" },
             { 
-                $match: { createdAt: { $gte: startDate, $lte: endDate } } // Filter by date range
+                $match: { createdAt: { $gte: startDate, $lte: endDate } } 
             },
             { 
                 $group: {
-                    _id: "$products.status", // Group by product status (Delivered, Returned, etc.)
+                    _id: "$products.status", 
                     count: { $sum: "$products.quantity" }
                 }
             }

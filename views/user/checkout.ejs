@@ -2,13 +2,30 @@
 <html lang="zxx">
 
 <head>
+    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Brightness</title>
     <link rel="icon" href="img/favicon.png">
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <!-- animate CSS -->
+    <link rel="stylesheet" href="css/animate.css">
+    <!-- owl carousel CSS -->
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="css/all.css">
+    <!-- flaticon CSS -->
+    <link rel="stylesheet" href="css/flaticon.css">
+    <link rel="stylesheet" href="css/themify-icons.css">
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <!-- swiper CSS -->
+    <link rel="stylesheet" href="css/slick.css">
+    <!-- style CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 
 <style>
     /* Make the address cards a fixed size */
@@ -161,7 +178,7 @@ button {
     <!-- Checkout Section -->
 <div class="container mt-4">
     <!-- Breadcrumb -->
-    <div class="mb-3 text-start">
+    <div class="mb-3 text-start mt-3">
         <h4>
             <a href="/" style="text-decoration: none;">Home</a> / 
             <a href="/cart" style="text-decoration: none;">Cart</a> / 
@@ -381,6 +398,14 @@ button {
 $(document).ready(function () {
     $('#checkoutForm').submit(function (e) {
         e.preventDefault();
+
+        const selectedAddress = $('input[name="selectedAddress"]:checked').val();
+        if (!selectedAddress) {
+            // Show an error message if no address is selected
+            alert("Please select a delivery address.");
+            return; // Prevent form submission if no address is selected
+        }
+
         const paymentMethod = $('input[name="paymentMethod"]:checked').val();
 
         if (paymentMethod === 'Cash on Delivery') {

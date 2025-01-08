@@ -8,13 +8,17 @@ const listProducts = async (req, res) => {
     try {
         const { query, sort, category, page = 1, minPrice = 0, maxPrice = Infinity } = req.query;
         let productQuery = { isBlocked: false, isDeleted: false };
+        
         if (query) {
             productQuery.productName = { $regex: query, $options: 'i' };
         }
+        
         if (category) {
             productQuery.category = category;
         }
+
         productQuery.price = { $gte: minPrice, $lte: maxPrice };
+        
         const sortOption = getSortOption(sort);
         const products = await Product.find(productQuery)
             .populate({
@@ -30,6 +34,7 @@ const listProducts = async (req, res) => {
         const categories = await Category.find({ isActive: true, isDeleted: false });
         const totalProducts = await Product.countDocuments(productQuery);
         const totalPages = Math.ceil(totalProducts / 20);
+        
         res.render('showProducts', {
             products: filteredProducts,
             categories,
@@ -49,6 +54,7 @@ const listProducts = async (req, res) => {
 };
 
 
+
 function getSortOption(sort) {
     switch (sort) {
         case 'price_low_to_high':
@@ -66,27 +72,25 @@ function getSortOption(sort) {
         case 'featured':
             return { views: -1 };
         default:
-            return { views: -1 };
+            return {};
     }
-  }
+}
+
 
   const loadSingleProduct = async (req, res) => {
     try {
         const productId = req.query.id; 
-        const userId = req.session.user ? req.session.user.id : null; // Get the user ID from session
+        const userId = req.session.user ? req.session.user.id : null; 
 
-        // Fetch the product along with its category
         const product = await Product.findById(productId).populate('category');
 
         if (!product) {
             return res.status(404).render('404', { message: 'Product not found' }); 
         }
 
-        // Increment view count
         product.views = (product.views || 0) + 1; 
         await product.save();
 
-        // Check if the product is in the user's wishlist
         let isInWishlist = false;
         if (userId) {
             const wishlist = await Wishlist.findOne({ userId });
@@ -95,22 +99,19 @@ function getSortOption(sort) {
             }
         }
 
-        // Fetch other products (not the current product)
         const products = await Product.find({ isDeleted: false, _id: { $ne: productId } });
 
-        // Fetch related products based on category
         const relatedProducts = await Product.find({
             category: product.category,
             _id: { $ne: product._id },
             isDeleted: false
         }).limit(4);
 
-        // Pass product, related products, and wishlist status to the view
         res.render('eachProduct', { 
             products, 
             product, 
             relatedProducts,
-            isInWishlist // This will be used to disable the button if the product is in wishlist
+            isInWishlist 
         });
     } catch (error) {
         console.error("Error fetching product:", error);

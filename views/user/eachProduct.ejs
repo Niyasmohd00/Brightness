@@ -71,7 +71,7 @@ opacity: 1; /* Increase opacity when hovered */
 
     <div class="container mt-4">
         <!-- breadcrumb part start-->
-    <div class="container">
+    <div class="container mt-3">
         <h3>
             <a href="/" style="text-decoration: none;">Home</a> / 
             <a href="/showProducts" style="text-decoration: none;">Product</a> / 
@@ -121,8 +121,14 @@ opacity: 1; /* Increase opacity when hovered */
                 </p>
                 <p>Category: <%= product.category && product.category.name ? product.category.name : 'Not available' %></p>
                 <p>MRP: Rs <%= product.mrp %></p>
-                <p>Offer Price: Rs <%= product.price %></p>
-                <p>Discount Available: <%= product.category && product.category.categoryOffer ? product.category.categoryOffer : 'No discount' %></p>
+                <p>Offer Price:
+                    <%if(product.mrp==product.price){%>
+                        No offer
+                    <%}else{%>
+                        Offer Price: Rs <%= product.price %>
+                    <%}%>
+                </p>
+                <p>Discount Available: <%= product.category && product.category.categoryOffer ? product.category.categoryOffer : 'No discount' %> %</p>
                 <p>Size: <%= product.size %></p>
                 <p>Colors: <%= product.availableColors %></p>
                 <% if (product.stock < 5 && product.stock > 0) { %>
@@ -195,7 +201,7 @@ opacity: 1; /* Increase opacity when hovered */
                 <% } else { %>
                     <div class="row">
                         <% relatedProducts.forEach((product) => { %>
-                            <div class="col-12 col-md-4 col-lg-3 mb-5">
+                            <div class="col-4 col-md-4 col-lg-3 mb-5">
                                 <a href="/eachProduct?id=<%= product._id %>" class="product-link">
                                     <% if (product.productImages && product.productImages.length > 0) { %>
                                         <img src="/uploads/re-image/<%= product.productImages[0] %>" 

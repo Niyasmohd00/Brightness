@@ -18,7 +18,6 @@ const pageNotFound=async(req,res)=>{
 
 const loadHomepage = async (req, res) => {
     try {
-        // Pass the user data from the session to the view
         const user = req.session.user;
         const trendingProducts = await Product.find({ isDeleted: false })
         .sort({ views: -1 })
@@ -247,9 +246,7 @@ const postForgotPassword=async(req,res)=>{
       req.session.forgotOtp = otp;
       req.session.userData =   email ;
   
-   //  return res.redirect('/verify-otp');
       console.log('OTP Sent', otp);
-     // return res.render('forgot-otp')
   
     return  res.redirect('/forgot-otp')
   
@@ -336,11 +333,9 @@ const postForgotPasswordOtp = async (req, res) => {
     const otp = req.body.otp.trim();
 
     if (otp.toString() === req.session.forgotOtp.toString()) {
-      // Clear the OTP from session after successful validation
       req.session.forgotOtp = null;
       return res.json({ success: true, message: 'OTP verified successfully!', redirectUrl: '/new-password' });
     } else {
-      // OTP does not match
       return res.json({ success: false, message: 'Invalid OTP, please try again.' });
     }
   } catch (error) {
@@ -387,7 +382,7 @@ const resendForgotPasswordOtp = async (req, res) => {
     }
 
     const otp = generateOtp();
-    req.session.forgotOtp = otp; // Update session with new OTP
+    req.session.forgotOtp = otp; 
 
     const emailSent = await sendVerificationEmail(email, otp);
     if (emailSent) {

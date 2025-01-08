@@ -23,14 +23,13 @@ const getAddressForm = async (req, res) => {
     }
 };
 
-// Render user profile page with addresses
 const getUserProfile = async (req, res) => {
     try {
-        const userId = req.session.user.id; // Access the 'id' property
+        const userId = req.session.user.id; 
         if (!userId) {
             return res.status(400).send('User ID is not set in session.');
         }
-        const user = await User.findById(userId); // This should work now with a valid ObjectId
+        const user = await User.findById(userId); 
         const addresses = await Address.find({ userId });
 
         if (!user) {
@@ -55,7 +54,6 @@ function generateOtp() {
   }
   
   async function sendVerificationEmail(email, otp) {
-    // Implementation remains the same
     try {
               const transporter = nodemailer.createTransport({
                   service: 'gmail',
@@ -87,7 +85,7 @@ function generateOtp() {
 const editProfile = async (req, res) => {
     try {
         const { name, email, phone } = req.body;
-        const userId = req.session.user.id; // Assume user ID is stored in session
+        const userId = req.session.user.id; 
   
         if (!userId) {
             req.flash('error_msg', 'Unauthorized');
@@ -100,7 +98,6 @@ const editProfile = async (req, res) => {
             return res.redirect('/profile');
         }
 
-        // Check if the email is already in use by another user
         const emailInUse = await User.findOne({ email, _id: { $ne: userId } });
         if (emailInUse) {
             req.flash('error_msg', 'Email is already in use');
@@ -108,7 +105,6 @@ const editProfile = async (req, res) => {
         }
 
         
-        // If email is changed, send verification OTP
         if (email !== user.email) {
             const otp = generateOtp();
             const emailSent = await sendVerificationEmail(email, otp);
@@ -118,16 +114,12 @@ const editProfile = async (req, res) => {
                 return res.redirect('/profile');
             }
 
-            // Store updated profile details and OTP in session
             req.session.tempProfile = { name, email, phone };
             req.session.emailOtp = otp;
 
-            // Redirect to OTP verification page
             return res.redirect('/verify-email-otp');
-         // return res.render('verify-email')
         }
 
-        // If email is not changed, directly update the profile
         user.name = name;
         user.email = email;
         user.phone = phone;
@@ -148,6 +140,7 @@ const getVerifyEmailOtpPage=async(req,res)=>{
         console.log(error.message)
     }
 }
+
 // Function to verify OTP and update email
 const verifyEmailOtp = async (req, res) => {
     try {
@@ -191,7 +184,6 @@ const verifyEmailOtp = async (req, res) => {
     try {
         const userId = req.session.user.id;
         
-        // Retrieve the email from the session's tempProfile
         const email = req.session.tempProfile?.email;
         
         if (!userId || !email) {
@@ -199,7 +191,7 @@ const verifyEmailOtp = async (req, res) => {
         }
         
         const otp = generateOtp();
-        req.session.emailOtp = otp; // Update session with new OTP
+        req.session.emailOtp = otp; 
         
         const emailSent = await sendVerificationEmail(email, otp);
         if (emailSent) {
@@ -242,7 +234,7 @@ const verifyEmailOtp = async (req, res) => {
 
 const addAddress = async (req, res) => {
     try {
-        const userId = req.session.user.id; // Assuming the user ID is stored in the session after login
+        const userId = req.session.user.id;
         const { fname, lname, housename, landmark, city, state, country, pincode, phone } = req.body;
 
         if (!userId) {
@@ -264,7 +256,7 @@ const addAddress = async (req, res) => {
 
         await newAddress.save();
 
-        res.redirect('/address'); // Redirect to a relevant page after saving the address
+        res.redirect('/address');
     } catch (error) {
         console.error('Error saving address:', error);
         res.status(500).send('Server Error');
@@ -294,7 +286,7 @@ const updateAddress = async (req, res) => {
         const updatedAddress = await Address.findByIdAndUpdate(
             addressId,
             { fname, lname, country,landmark, housename, city, state, pincode, phone },
-            { new: true }  // Return the updated document
+            { new: true }  
         );
 
         if (!updatedAddress) {
@@ -302,7 +294,7 @@ const updateAddress = async (req, res) => {
         }
         console.log
 
-        res.redirect('/address');  // Redirect to a relevant page after updating the address
+        res.redirect('/address'); 
     } catch (error) {
         console.error('Error updating address:', error.message);
         res.status(500).render('edit-address', { message: 'An error occurred while updating your address. Please try again.', address: req.body });
@@ -316,7 +308,7 @@ const deleteAddress=async (req, res) => {
 
     try {
         const id = req.params.id;
-        await Address.findByIdAndDelete(id); // Delete the address from the database
+        await Address.findByIdAndDelete(id); 
         res.status(200).json({ success: true, message: "Address deleted successfully" });
     } catch (error) {
         console.error('Error deleting address:', error);

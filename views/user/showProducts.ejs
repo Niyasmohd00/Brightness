@@ -31,7 +31,7 @@
     <%- include("../partials/user/header") %>
 
     <!-- breadcrumb part start-->
-    <div class="container">
+    <div class="container mt-3">
         <h3>
             <a href="/" style="text-decoration: none;">Home</a> / 
             <a href="/showProducts" style="text-decoration: none;">Product</a>
@@ -72,6 +72,7 @@
                                     Category
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="categoryDropdown" style="width: 200px; margin-right: 10px;">
+                                    <a class="dropdown-item category-option" href="?category=&query=<%= query || '' %>&sort=<%= sortOption || '' %>">All</a>
                                     <% categories.forEach(category => { %>
                                         <a class="dropdown-item category-option" 
                                            href="?category=<%= category._id %>&query=<%= query || '' %>&sort=<%= sortOption || '' %>" 
@@ -79,7 +80,7 @@
                                            <%= category.name %>
                                         </a>
                                     <% }) %>
-                                </div>
+                                </div>                                
                             </div>
                         </div>
                     </div>
@@ -93,6 +94,7 @@
                                         Sort By
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="sortDropdown" style="width: 200px; margin-right: 10px;">
+                                        <a class="dropdown-item" href="?sort=&category=<%= selectedCategory || '' %>&query=<%= query || '' %>" <%= !sortOption ? 'class="active"' : '' %>>None</a>
                                         <a class="dropdown-item" href="?sort=popularity&category=<%= selectedCategory || '' %>&query=<%= query || '' %>" <%= sortOption === 'popularity' ? 'class="active"' : '' %>>Popularity</a>
                                         <a class="dropdown-item" href="?sort=price_low_to_high&category=<%= selectedCategory || '' %>&query=<%= query || '' %>" <%= sortOption === 'price_low_to_high' ? 'class="active"' : '' %>>Price: Low to High</a>
                                         <a class="dropdown-item" href="?sort=price_high_to_low&category=<%= selectedCategory || '' %>&query=<%= query || '' %>" <%= sortOption === 'price_high_to_low' ? 'class="active"' : '' %>>Price: High to Low</a>
@@ -101,7 +103,7 @@
                                         <a class="dropdown-item" href="?sort=new_arrivals&category=<%= selectedCategory || '' %>&query=<%= query || '' %>" <%= sortOption === 'new_arrivals' ? 'class="active"' : '' %>>New Arrivals</a>
                                         <a class="dropdown-item" href="?sort=a_to_z&category=<%= selectedCategory || '' %>&query=<%= query || '' %>" <%= sortOption === 'a_to_z' ? 'class="active"' : '' %>>A - Z</a>
                                         <a class="dropdown-item" href="?sort=z_to_a&category=<%= selectedCategory || '' %>&query=<%= query || '' %>" <%= sortOption === 'z_to_a' ? 'class="active"' : '' %>>Z - A</a>
-                                    </div>
+                                    </div>                                    
                                 </div>
                             </div>
                         </div>
@@ -124,7 +126,7 @@
             <% } else { %>
                <div class="row">
                     <% products.forEach((product) => { %>
-                        <div class="col-12 col-md-4 col-lg-3 mb-5">
+                        <div class="col-4 col-md-4 col-lg-3 mb-5">
                             <a href="/eachProduct?id=<%=product._id %>" class="product-link">
                                 <% if (product.productImages && product.productImages.length > 0) { %>
                                     <img src="/uploads/re-image/<%= product.productImages[0] %>" 
@@ -138,7 +140,11 @@
                                 <% } %>
                                 <h3><%= product.productName %></h3>
                                 <p>
-                                    <del>₹<%= product.mrp %></del> ₹<%= product.price %>
+                                    <%if(product.mrp==product.price){%>
+                                        ₹<%= product.price %>
+                                    <%}else{%>
+                                        <del>₹<%= product.mrp %></del> ₹<%= product.price %>
+                                    <%}%>
                                 </p>
                             </a>
                         </div>

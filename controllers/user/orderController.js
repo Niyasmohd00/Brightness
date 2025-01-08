@@ -12,20 +12,14 @@ const getOrders = async (req, res) => {
       return res.redirect('/login');
     }
 
-    // Get the current page from the query parameters or default to page 1
     const currentPage = parseInt(req.query.page) || 1;
-    const ordersPerPage = 10; // Number of orders per page
-
-    // Calculate the total number of orders
+    const ordersPerPage = 10;
     const totalOrders = await Order.countDocuments({ userId });
-
-    // Calculate the total number of pages
     const totalPages = Math.ceil(totalOrders / ordersPerPage);
 
-    // Fetch the orders for the current page
     const orders = await Order.find({ userId })
-      .skip((currentPage - 1) * ordersPerPage)  // Skip the appropriate number of orders
-      .limit(ordersPerPage)  // Limit to the number of orders per page
+      .skip((currentPage - 1) * ordersPerPage) 
+      .limit(ordersPerPage)  
       .populate({
         path: 'products.productId',
         model: 'Product',
@@ -34,7 +28,6 @@ const getOrders = async (req, res) => {
       .sort({ createdAt: -1 })
       .exec();
 
-    // Add the cancelable flag to each order
     const ordersWithFlags = orders.map((order) => {
       const isCancelable = order.products.every(
         (product) => product.status === 'Processing' || product.status === 'Shipped' || product.status === 'Pending'
@@ -42,7 +35,6 @@ const getOrders = async (req, res) => {
       return { ...order.toObject(), isCancelable };
     });
 
-    // Pass the data to the view
     res.render('order', { 
       orders: ordersWithFlags, 
       totalPages, 

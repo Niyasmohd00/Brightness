@@ -17,43 +17,51 @@ const getCheckout = async (req, res) => {
     try {
         const userId = req.session.user.id;
         const cart = await Cart.findOne({ userId }).populate({
-            path: 'items.productId',       
+            path: 'items.productId',
             populate: {
-                path: 'category',         
-                model: 'Category',        
+                path: 'category',
+                model: 'Category',
             },
         });
+
         if (!cart || cart.items.length === 0) {
             req.flash('error_msg', 'Cart Items Not Available.');
             return res.redirect('/cart');
         }
+
         const user = await User.findById(userId);
         let isValidCart = true;
-        cart.items.forEach((item) => {
+        let errorMessage = ""; 
+
+        for (const item of cart.items) {
             const product = item.productId;
+
             if (!product) {
                 isValidCart = false;
                 errorMessage = "Some products in your cart are no longer available.";
-                return;
+                break; 
             }
-            if (product.stock<0) {
+
+            if (product.stock < item.quantity) {
                 isValidCart = false;
-                errorMessage = `Insufficient stock for ${product.productName}.`;
-                return;
+                errorMessage = `Insufficient stock for ${product.productName}. `;
+                break;
             }
+
             if (item.quantity > 5) {
                 isValidCart = false;
                 errorMessage = `Cannot have more than 5 units of ${product.productName}.`;
-                return;
+                break; 
             }
-        });
-        if (!isValidCart) {
-            return res.render('checkout', {
-                cart,
-                message: errorMessage,
-            });
         }
-        console.log(user.walletBalance)
+
+        if (!isValidCart) {
+            req.flash('error_msg', errorMessage); 
+            return res.redirect('/cart');
+        }
+
+        req.flash('success_msg', 'Cart is ready for checkout.');
+
         const addresses = await Address.find({ userId });
 
         res.render('checkout', {
@@ -64,7 +72,8 @@ const getCheckout = async (req, res) => {
         });
     } catch (error) {
         console.error("Error rendering checkout page:", error);
-        res.status(500).send("Internal Server Error");
+        req.flash('error_msg', 'Internal Server Error.');
+        return res.redirect('/cart'); 
     }
 };
 
@@ -482,13 +491,13 @@ const editAddressInCart = async (req, res) => {
 };
 
 const generateUniqueOrderId = async function () {
-    const min = 1000000000; // Minimum 10-digit number
-    const max = 9999999999; // Maximum 10-digit number
+    const min = 1000000000; 
+    const max = 9999999999;
     let orderId;
   
     do {
-      orderId = Math.floor(Math.random() * (max - min + 1)) + min; // Generate random 10-digit number
-    } while (await Order.exists({ orderId })); // Ensure uniqueness
+      orderId = Math.floor(Math.random() * (max - min + 1)) + min; 
+    } while (await Order.exists({ orderId })); 
   
     return orderId;
   };

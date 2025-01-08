@@ -74,7 +74,13 @@
                       </div>
                     </td>
                     <td class="text-left">
-                      <h5><del>₹<%= item.productId.mrp %></del> ₹<%= item.productId.price %></h5>
+                      <h5><p>
+                        <%if(item.productId.mrp==item.productId.price){%>
+                            ₹<%= item.productId.price %>
+                        <%}else{%>
+                            <del>₹<%= item.productId.mrp %></del> ₹<%= item.productId.price %>
+                        <%}%>
+                    </p></h5>
                     </td>
                     <td class="text-left">
                       <div class="product_count">
@@ -100,7 +106,13 @@
                     </td>
                     
                     <td class="text-left">
-                      <h5><del>₹<%= item.productId.mrp * item.quantity %></del> ₹<%= item.productId.price * item.quantity %></h5>
+                      <h5>
+                        <%if(item.productId.mrp==item.productId.price){%>
+                          ₹<%= item.productId.price * item.quantity %>
+                        <%}else{%>
+                          <del>₹<%= item.productId.mrp * item.quantity %></del> ₹<%= item.productId.price * item.quantity %>
+                        <%}%>
+                      </h5>
                     </td>
                     <td class="align-left">
                       <form action="/removeCart/<%= item._id %>" method="GET" style="display: inline;">

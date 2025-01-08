@@ -162,7 +162,7 @@
 <body>
     <section class="cart_area section_padding">
         <div class="container" style="overflow-x: hidden;">
-            <div class="container">
+            <div class="container mt-3">
                 <h3>
                     <br>
                     <a href="/" style="text-decoration: none; color: blue; padding-left: 40px;">Home</a> / 
@@ -197,7 +197,7 @@
                                 </td>
                                 <td>₹<%= product.productId.price %></td>
                                 <td><%= product.quantity %></td>
-                                <td><%= product.offerAmount %></td>
+                                <td><%= product.offerAmount.toFixed(2) %></td>
                                 <td>₹<%= product.productId.price * product.quantity-product.offerAmount.toFixed(2) %></td>
                             </tr>
                         </tbody>                        
@@ -207,7 +207,7 @@
                 <!-- Total Amount -->
                 <div class="order-summary">
                     <div class="total" style="color: #B08EAD;">
-                        Total Amount: ₹<%= product.productId.price * product.quantity %>
+                        Total Amount: ₹<%= product.productId.price * product.quantity-product.offerAmount.toFixed(2) %> %>
                     </div>
                     <br>
                     <!-- Tracking ID & Date -->
